@@ -1,0 +1,51 @@
+body {
+      background: url("../images/tmdt.jpg") no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .register-box {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 400px;
+    }
+    .register-box h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .form-control {
+      border-radius: 30px;
+      padding-left: 40px;
+    }
+    .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+    .form-group i {
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: #555;
+    }
+    .btn-custom {
+      width: 100%;
+      border-radius: 30px;
+    }
+
+      .login-box {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      width: 400px;
+    }
+    .login-box h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }

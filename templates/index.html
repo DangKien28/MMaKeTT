@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MMaKeTT</title>
+</head>
+<body>
+  <h1>MMaKeTT web - hello world</h1>
+  {% if username %}
+    <span>Xin chao {{username}}</span>
+    <a href="{{ url_for('auth.logout') }}"><button>Đăng xuất</button></a>
+  {% else %}
+    <a href="{{url_for('auth.register')}}"><button>Đăng ký</button></a>
+    <a href="{{url_for('auth.login')}}"><button>Đăng nhập</button></a>
+  {% endif %}
+</body>
+</html>

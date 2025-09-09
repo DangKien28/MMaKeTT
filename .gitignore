@@ -1,0 +1,52 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg
+*.egg-info/
+*.log
+
+# =========================
+# Environment & Config
+# =========================
+.env
+*.env
+config.py     # nếu chứa thông tin mật
+instance/
+secrets.json
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+env/
+ENV/
+.venv/
+.pyenv/
+
+# =========================
+# Database / Cache
+# =========================
+*.db
+*.sqlite3
+*.sqlite
+*.bak
+*.sql
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# OS
+# =========================
+.DS_Store
+Thumbs.db
