@@ -1,8 +1,18 @@
 from flask import Flask
 from controller import auth_controller, home_controller
+from config import Config
+from controller.oauth_controller import oauth, init_oauth
 
 app = Flask(__name__)
-app.secret_key = "tk_message"
+app.config.from_object(Config)
+
+oauth.init_app(app)
+google = init_oauth(app)
+auth_controller.google = google
+
+
+
+
 app.register_blueprint(auth_controller.auth_bp)
 app.register_blueprint(home_controller.home_bp)
 

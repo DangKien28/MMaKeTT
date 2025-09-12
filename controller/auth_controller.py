@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, request
+from flask import Blueprint, render_template, redirect, url_for, request, session
 from model.user import User
-from utils.session import login_user, logout_user
 
 auth_bp = Blueprint("auth", __name__)
 
+google = None
+
+#dang ky
 @auth_bp.route("/register", methods = ["GET", "POST"])
 def register():
   if request.method=="POST":
@@ -24,6 +26,7 @@ def register():
     return redirect(url_for("auth.login"))
   return render_template("register.html")
   
+#dang nhap
 @auth_bp.route("/login", methods = ["GET", "POST"])
 def login():
   if request.method=="POST":
@@ -38,7 +41,10 @@ def login():
 
     if result:
       print("Tim thay tai khoan------------------------------------")
-      login_user(result)
+      session["user"] = {
+        "email": result.email,
+        "name": result.name
+      }
       print("session: ", result.email, " ", result.name)
       return redirect(url_for("home.index"))
     else:
@@ -46,8 +52,28 @@ def login():
       return redirect(url_for("auth.login"))
   return render_template("login.html")
   
+
+#dang xuat
 @auth_bp.route("/logout")
 def logout():
-  logout_user()
+  session.clear()
   print("Da dang xuat")
+  return redirect(url_for("home.index"))
+
+#SOCIAL
+#DANG NHAP BANG GOOGLE
+
+@auth_bp.route("/login/google")
+def google_login():
+  redirect_uri = url_for("auth.authorize_google", _external=True)
+  print("direct:")
+  print(redirect_uri)
+  return google.authorize_redirect(redirect_uri)
+
+@auth_bp.route("/callback/google")
+def authorize_google():
+  token = google.authorize_access_token()
+  resp = google.get("userinfo")
+  user_info = resp.json()
+  session["user"] = user_info
   return redirect(url_for("home.index"))

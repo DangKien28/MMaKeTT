@@ -1,0 +1,248 @@
+/* Thiết lập chung */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header */
+.top-bar {
+    background-color: #f8f8f8;
+    padding: 8px 0;
+    font-size: 13px;
+    border-bottom: 1px solid #ddd;
+}
+
+.top-bar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-bar-left a, .top-bar-right a {
+    margin: 0 10px;
+}
+
+.top-bar-right a i {
+    margin-right: 5px;
+}
+
+.main-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    background-color: #fff;
+}
+
+.logo img {
+    height: 40px;
+}
+
+.search-bar {
+    display: flex;
+    border: 2px solid #ff8c00;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 50%;
+}
+
+.search-bar input {
+    border: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+}
+
+.search-bar input:focus {
+    outline: none;
+}
+
+.search-bar button {
+    border: none;
+    background-color: #ff8c00;
+    color: white;
+    padding: 0 20px;
+    cursor: pointer;
+}
+
+.user-actions {
+    display: flex;
+    align-items: center;
+}
+
+#logged-in-view {
+    display: flex;
+    align-items: center;
+}
+
+.auth-button, .account-button, .cart-button {
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+.account-button {
+    border: 1px solid #ddd;
+    margin-right: 10px;
+}
+
+.cart-button {
+     background-color: #f0f0f0;
+     border: 1px solid #ddd;
+}
+
+
+/* Navigation */
+.main-nav {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.main-nav .container a {
+    padding: 15px 20px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+.main-nav .container a:hover {
+    color: #ff8c00;
+}
+
+/* Main Content */
+main {
+    padding: 20px 0;
+}
+
+.promo-banners {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.promo-banners .banner {
+    width: 50%;
+    border-radius: 10px;
+}
+
+.utility-buttons {
+    display: flex;
+    justify-content: space-around;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+/* Product Section */
+.product-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 5px solid #ff8c00;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    transition: box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.product-card img {
+    width: 100%;
+    display: block;
+}
+
+.product-info {
+    padding: 15px;
+}
+
+.product-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.product-rating {
+    color: #f9d71c;
+    margin-bottom: 10px;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #d0021b;
+    margin-bottom: 15px;
+}
+
+.product-actions button {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.product-actions .buy-now {
+    background-color: #ff8c00;
+    color: white;
+    border-color: #ff8c00;
+}
+
+.product-actions .add-to-cart {
+    background-color: #fff;
+    color: #ff8c00;
+    border-color: #ff8c00;
+}
+
+#user_account {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+    padding: auto;
+}
+
+.user-actions #logged-out-view button #user_account{
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    margin: 0;
+    line-height: 0;
+    overflow: hidden;
+}
+
+.user-actions #logged-out-view button {
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}

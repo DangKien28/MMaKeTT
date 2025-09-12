@@ -1,18 +1,159 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MMaKeTT</title>
-</head>
-<body>
-  <h1>MMaKeTT web - hello world</h1>
-  {% if username %}
-    <span>Xin chao {{username}}</span>
-    <a href="{{ url_for('auth.logout') }}"><button>Đăng xuất</button></a>
-  {% else %}
-    <a href="{{url_for('auth.register')}}"><button>Đăng ký</button></a>
-    <a href="{{url_for('auth.login')}}"><button>Đăng nhập</button></a>
-  {% endif %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMAKETT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/home_style.css')}}">
+    <body>
+    <header>
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-left">
+                    <a href="#">Sales Channel</a>
+                    <a href="#">Download App</a>
+                </div>
+                <div class="top-bar-right">
+                    <a href="#"><i class="fa-regular fa-bell"></i> Notice</a>
+                    <a href="#"><i class="fa-regular fa-circle-question"></i> Support</a>
+                    <a href="#"><i class="fa-solid fa-globe"></i> Language <i class="fa-solid fa-chevron-down"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-header">
+            <div class="container">
+                <div class="logo">
+                    <img src="https://via.placeholder.com/150x40.png?text=MMAKETT" alt="MMAKETT Logo">
+                </div>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search for...">
+                    <button><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+                <div class="user-actions">
+                    <div id="logged-out-view">
+                        {% if user_info %}
+                          <button><img src="../static/images/avatar.jpg" alt="User account" id="user_account"></button>
+                          <a href="{{ url_for('auth.logout') }}"><button>Đăng xuất</button></a>
+                        {% else %}
+                          <a href="{{url_for('auth.register')}}"><button>Đăng ký</button></a>
+                          <a href="{{url_for('auth.login')}}"><button>Đăng nhập</button></a>
+                        {% endif %}
+                    </div>
+                    <div id="logged-in-view" style="display: none;">
+                        <a href="#" class="account-button"><i class="fa-regular fa-user"></i> Account</a>
+                        <a href="#" class="cart-button">
+                            <i class="fa-solid fa-cart-shopping"></i> $0.00(0)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="main-nav">
+            <div class="container">
+                <a href="#">Shoes</a>
+                <a href="#">Electric Fan</a>
+                <a href="#">Camera</a>
+                <a href="#">Watch</a>
+                <a href="#">Small Scale</a>
+                <a href="#">Teddy Bear</a>
+                <a href="#">Furniture</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="promo-banners">
+            <img src="https://via.placeholder.com/600x250.png?text=Banner+1" alt="Combo 4 Mon" class="banner">
+            <img src="https://via.placeholder.com/600x250.png?text=Banner+2" alt="Gia Tot" class="banner">
+        </section>
+        
+        <section class="utility-buttons">
+            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Flash+Sale" alt="Flash Sale"></a>
+            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Discount" alt="Discount"></a>
+            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Extra+Bonus" alt="Extra Bonus"></a>
+            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Free+Shipping" alt="Free Shipping"></a>
+        </section>
+
+        <section class="product-section">
+            <h2>DISCOVER NOW</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <img src="https://via.placeholder.com/250x250.png?text=D'Alba+Toner" alt="Product Image">
+                    <div class="product-info">
+                        <p class="product-title">D'Alba Toner Serum</p>
+                        <div class="product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="product-price">đ448.800</p>
+                        <div class="product-actions">
+                            <button class="buy-now">Buy Now</button>
+                            <button class="add-to-cart">Add to cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="https://via.placeholder.com/250x250.png?text=D'Alba+Toner" alt="Product Image">
+                    <div class="product-info">
+                        <p class="product-title">D'Alba Toner Serum</p>
+                        <div class="product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="product-price">đ448.800</p>
+                        <div class="product-actions">
+                            <button class="buy-now">Buy Now</button>
+                            <button class="add-to-cart">Add to cart</button>
+                        </div>
+                    </div>
+                </div>
+                 <div class="product-card">
+                    <img src="https://via.placeholder.com/250x250.png?text=D'Alba+Toner" alt="Product Image">
+                    <div class="product-info">
+                        <p class="product-title">D'Alba Toner Serum</p>
+                        <div class="product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="product-price">đ448.800</p>
+                        <div class="product-actions">
+                            <button class="buy-now">Buy Now</button>
+                            <button class="add-to-cart">Add to cart</button>
+                        </div>
+                    </div>
+                </div>
+                 <div class="product-card">
+                    <img src="https://via.placeholder.com/250x250.png?text=D'Alba+Toner" alt="Product Image">
+                    <div class="product-info">
+                        <p class="product-title">D'Alba Toner Serum</p>
+                        <div class="product-rating">
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <p class="product-price">đ448.800</p>
+                        <div class="product-actions">
+                            <button class="buy-now">Buy Now</button>
+                            <button class="add-to-cart">Add to cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

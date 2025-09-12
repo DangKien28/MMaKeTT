@@ -16,7 +16,7 @@
       <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" width="50" alt="Logo">
       <h3>MMaKeTT Login</h3>
     </div>
-
+<!--form đăng nhập-->
     <form id="login-form" action="/login" method="POST">
       <!-- Email -->
       <div class="form-group">
@@ -32,7 +32,24 @@
 
       <button type="submit" class="btn btn-primary btn-custom">Login</button>      
     </form>
-    <a href="{{url_for('auth.register')}}"><button id="register">Register</button></a>
-  </div>
+<!--Đăng nhập bằng các nền tảng khác-->
+    <div class="social-login">
+      <div class="social-btn">
+        <a href="{{url_for('auth.google_login')}}"><button><img src="../static/images/gg.png" alt="google"></button></a>
+      </div>
+
+      <div class="social-btn">
+        <button><img src="../static/images/fb.png" alt="facebook"></button>
+      </div>
+
+      <div class="social-btn">
+        <button><img src="../static/images/apple.jpg" alt="apple"></button>
+      </div>
+    </div>
+<!--Đăng ký-->
+    <div class="register">
+      <b>You don't have account?</b>
+      <a href="{{url_for('auth.register')}}"><button class="register-btn">Register</button></a>
+    </div>
 </body>
 </html>
