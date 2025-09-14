@@ -3,86 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MMAKETT</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/home_style.css')}}">
-    <body>
-    <header>
-        <div class="top-bar">
-            <div class="container">
-                <div class="top-bar-left">
-                    <a href="#">Sales Channel</a>
-                    <a href="#">Download App</a>
-                </div>
-                <div class="top-bar-right">
-                    <a href="#"><i class="fa-regular fa-bell"></i> Notice</a>
-                    <a href="#"><i class="fa-regular fa-circle-question"></i> Support</a>
-                    <a href="#"><i class="fa-solid fa-globe"></i> Language <i class="fa-solid fa-chevron-down"></i></a>
-                </div>
+    <title>MMakeTT - Sản phẩm chăm sóc sức khỏe</title>
+    <link rel="stylesheet" href="{{url_for('static', filename = 'css/home_style.css')}}">
+</head>
+<body>
+    <!-- Top Bar -->
+    <div class="top-bar">
+        Sales Channel | Download App
+        <div style="float: right;">
+            📍 Notice | 🔍 Support | 🌐 Language
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-circle">M</div>
+            <div class="logo-text">MMakeTT</div>
+        </div>
+        
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search for...">
+            <span class="search-icon">🔍</span>
+        </div>
+        
+        <div class="header-actions">
+            <!-- <a href="#" class="account-btn">Account</a>
+            <a href="#" class="cart-btn">🛒 $0.00(0)</a> -->
+
+            <div class="user-actions">
+                {% if user_info %}
+                    <a href="#" class="account-button"><img src="{{ user_info.avatar_url or url_for('static', filename='images/avatar.jpg') }}" alt="User account" class="user-avatar"></a>
+                    <a href="#" class="cart-btn"><i class="fa-solid fa-cart-shopping"></i>🛒 $0.00(0)</a>
+                    <a href="{{ url_for('auth.logout') }}" class="button-logout">Đăng xuất</a>
+                {% else %}
+                    <a href="{{ url_for('auth.register') }}" class="button-register">Đăng ký</a>
+                    <a href="{{ url_for('auth.login') }}" class="button-login">Đăng nhập</a>
+                {% endif %}
             </div>
         </div>
-
-        <div class="main-header">
-            <div class="container">
-                <div class="logo">
-                    <img src="https://via.placeholder.com/150x40.png?text=MMAKETT" alt="MMAKETT Logo">
-                </div>
-                <div class="search-bar">
-                    <input type="text" placeholder="Search for...">
-                    <button><i class="fa-solid fa-magnifying-glass"></i></button>
-                </div>
-                <div class="user-actions">
-                    <div id="logged-out-view">
-                        {% if user_info %}
-                          <button><img src="../static/images/avatar.jpg" alt="User account" id="user_account"></button>
-                          <a href="{{ url_for('auth.logout') }}"><button>Đăng xuất</button></a>
-                        {% else %}
-                          <a href="{{url_for('auth.register')}}"><button>Đăng ký</button></a>
-                          <a href="{{url_for('auth.login')}}"><button>Đăng nhập</button></a>
-                        {% endif %}
-                    </div>
-                    <div id="logged-in-view" style="display: none;">
-                        <a href="#" class="account-button"><i class="fa-regular fa-user"></i> Account</a>
-                        <a href="#" class="cart-button">
-                            <i class="fa-solid fa-cart-shopping"></i> $0.00(0)
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <nav class="main-nav">
-            <div class="container">
-                <a href="#">Shoes</a>
-                <a href="#">Electric Fan</a>
-                <a href="#">Camera</a>
-                <a href="#">Watch</a>
-                <a href="#">Small Scale</a>
-                <a href="#">Teddy Bear</a>
-                <a href="#">Furniture</a>
-            </div>
-        </nav>
     </header>
 
-    <main class="container">
-        <section class="promo-banners">
-            <img src="https://via.placeholder.com/600x250.png?text=Banner+1" alt="Combo 4 Mon" class="banner">
-            <img src="https://via.placeholder.com/600x250.png?text=Banner+2" alt="Gia Tot" class="banner">
-        </section>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#">Shoes</a>
+        <a href="#">Electric Fan</a>
+        <a href="#">Camera</a>
+        <a href="#">Watch</a>
+        <a href="#">Small Scale</a>
+        <a href="#">Teddy Bear</a>
+        <a href="#">Furniture</a>
+    </nav>
+
+    <!-- Banner Section -->
+    <section class="banner-section">
+        <div class="main-banner">
+            <div class="sale-badge">DEAL TUYỆT ĐỈNH</div>
+            <div class="combo-deal">COMBO 4 MÓN</div>
+            <div class="discount-text">CHỈ 56K</div>
+            <p>🎁 Khuyến mãi đặc biệt - Tiết kiệm tối đa!</p>
+        </div>
         
-        <section class="utility-buttons">
-            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Flash+Sale" alt="Flash Sale"></a>
-            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Discount" alt="Discount"></a>
-            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Extra+Bonus" alt="Extra Bonus"></a>
-            <a href="#" class="util-btn"><img src="https://via.placeholder.com/150x50.png?text=Free+Shipping" alt="Free Shipping"></a>
-        </section>
+        <div class="side-banner">
+            <h3>GIẢI TỐT</h3>
+            <h4>CHỨA TĂNG CỜ</h4>
+            <h2>GIẢI PHÁP 7 ỨNG</h2>
+            <p>Đặt tại những điểm ổn từ công việc</p>
+        </div>
+    </section>
 
-        <section class="product-section">
-            <h2>DISCOVER NOW</h2>
-            <div class="product-grid" id="product-list"></div>
-        </section>
-    </main>
+    <!-- Promo Badges -->
+    <div class="promo-badges" style="padding: 0 20px;">
+        <a href="#" class="badge flash-sale">⚡ FLASH SALE</a>
+        <a href="#" class="badge discount">💰 DISCOUNT</a>
+        <a href="#" class="badge bonus">🎁 Bonus</a>
+        <a href="#" class="badge free-ship">🚚 FREE SHIPPING</a>
+    </div>
 
-    <script src="{{url_for('static', filename='js/script.js')}}"></script>
+    <!-- Products Section -->
+    <section class="products-section">
+        <h2 class="section-title">DISCOVER NOW</h2>
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-image">
+                    <div class="sale-badge"></div>
+                    <div class="product-box"></div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{product.name}}</div>
+                    <div class="product-price">{{ "{:,.0f} đ".format(product.price)}}</div>
+                    <div class="product-rating">{{"{:,.0f}".format(product.rating)}}/5⭐️</div>
+                    <div class="product-buttons">
+                        <a href="#" class="btn btn-primary">MUA NGAY</a>
+                        <a href="#" class="btn btn-secondary">XEM CHI TIẾT</a>
+                    </div>
+                </div>
+            </div>
+            {%else%}
+                <p>Hiện chưa có sản phẩm để hiển thị</p>
+            {%endfor%}
+
+            <!-- Product 1 : SẢN PHẨM MẪU-->
+            <div class="product-card">
+                <div class="product-image">
+                    <div class="sale-badge">Tiêu dùng thân thiện lên</div>
+                    <div class="product-box">Toner dưỡng ẩm dịu làm sáng</div>
+                </div>
+                <div class="product-info">
+                    <div class="product-name">D'Alba Toner Serum Essence</div>
+                    <div class="product-price">+ 448.800</div>
+                    <div class="product-rating">5/5⭐️</div>
+                    <div class="product-buttons">
+                        <a href="#" class="btn btn-primary">MUA NGAY</a>
+                        <a href="#" class="btn btn-secondary">XEM CHI TIẾT</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="products-grid" id="product-container"></div>
+    </section>
+
+    <script src="{{url_for('static', filename = 'js/script.js')}}"></script>
 </body>
 </html>

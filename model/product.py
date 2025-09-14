@@ -17,20 +17,20 @@ class Product:
     db.commit()
     db.close()
 
-  def all_products(self):
-    db = get_db_connection()
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM products")
-    products_data = cursor.fetchall()
-    db.close()
-    producs_list = []
-    for p_data in products_data:
-      product = Product(
-        name=p_data["product_name"],
-        price=p_data["product_price"],
-        rating=p_data["product_rating"],
-        image_url=p_data["image_url"]
-      )
-      producs_list.append(product)
-    return producs_list
+def all_products():
+  db = get_db_connection()
+  cursor = db.cursor(dictionary=True)
+  cursor.execute("SELECT * FROM products")
+  products_data = cursor.fetchall()
+  db.close()
+  producs_list = []
+  for p_data in products_data:
+    product = Product(
+      name=p_data["product_name"],
+      price=p_data["product_price"],
+      rating=p_data["product_rating"],
+      image_url=p_data["image_url"]
+    )
+    producs_list.append(product)
+  return producs_list
   
