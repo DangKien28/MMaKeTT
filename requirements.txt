@@ -87,7 +87,7 @@ pygame==2.6.1
 Pygments==2.19.1
 pyinstaller==6.13.0
 pyinstaller-hooks-contrib==2025.4
-PyMySQL==1.1.1
+psycopg2-binary
 PySocks==1.7.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
