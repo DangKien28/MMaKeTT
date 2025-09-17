@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request, session
-from model.user import User, find_user
+from model.user import User, find_user, Account, Gender
+from datetime import date
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -24,6 +25,10 @@ def register():
       print("Email da duoc dang ky")
       return render_template("register.html")
     user.save()
+    
+    user_account = Account(date.today(), Gender.OTHER, "Address not set", "ID Card not set", date.today(), "Place not set", user_id=user.id)
+    user_account.save_account()
+
     return redirect(url_for("auth.login"))
   return render_template("register.html")
   
@@ -32,8 +37,6 @@ def register():
 def login():
   if request.method=="POST":
     eMail = request.form.get("email")
-    name = request.form.get("username")
-    phone = request.form.get("phone")
     password = request.form.get("password")
 
     result = find_user(eMail)
@@ -45,7 +48,8 @@ def login():
       session["user"] = {
         "id": result.id,
         "email": result.email,
-        "name": result.name
+        "name": result.name,
+        "phone": result.phone
       }
       print("session: ", result.email, " ", result.name)
       return redirect(url_for("home.index"))
@@ -88,13 +92,16 @@ def authorize_google():
       password="default_password"
     )
     new_user.save()
+    user_account = Account(date.today(), Gender.OTHER, "Address GG not set", "ID Card GG not set", date.today(), "Place not set", user_id=new_user.id)
+    user_account.save_account()
     user = find_user(user_info["email"])
 
   if user:
     session["user"] = {
       "id": user.id,
       "name": user.name,
-      "email": user.email
+      "email": user.email,
+      "phone": "GG Phone not set"
     }
     return redirect(url_for("home.index"))
 
