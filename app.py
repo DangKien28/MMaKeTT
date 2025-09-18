@@ -6,10 +6,9 @@ from controller.oauth_controller import oauth, init_oauth
 app = Flask(__name__)
 app.config.from_object(Config)
 
-oauth.init_app(app)
-google, facebook = init_oauth(app)
-auth_controller.google = google
-auth_controller.facebook = facebook
+init_oauth(app)
+# auth_controller.google = google
+# auth_controller.facebook = facebook
 
 
 

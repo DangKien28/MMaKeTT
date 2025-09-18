@@ -23,14 +23,12 @@
         </div>
         
         <div class="search-container">
-            <input type="text" class="search-box" placeholder="Search for...">
-            <span class="search-icon">🔍</span>
+            <input type="text" class="search-box" placeholder="Search for..." id="search_input">
+            <!-- <span class="search-icon">🔍</span> -->
+            <button class="search-icon" id="search_icon">🔍</button>
         </div>
         
         <div class="header-actions">
-            <!-- <a href="#" class="account-btn">Account</a>
-            <a href="#" class="cart-btn">🛒 $0.00(0)</a> -->
-
             <div class="user-actions">
                 {% if user_info %}
                     <a href="{{url_for('home.account_info')}}" class="account-button"><img src="{{ user_info.avatar_url or url_for('static', filename='images/avatar.jpg') }}" alt="User account" class="user-avatar"></a>

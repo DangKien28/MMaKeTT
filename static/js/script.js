@@ -36,4 +36,19 @@ document.addEventListener('DOMContentLoaded', function(){
     console.error('Lỗi khi lấy dữ liệu sản phẩm: ', error);
     productsContainer.innerHTML = '<p>Có lỗi khi tải sản phẩm</p>'
   })
+
+  //Ấn nút tìm kiếm
+  const search_btn = document.getElementById('search_icon')
+  if (search_btn)
+  {
+    search_btn.addEventListener('click', search_product)
+  }
+
 })
+
+function search_product()
+{
+  const search_input = document.getElementById("search_input").value
+
+  
+}

@@ -1,11 +1,13 @@
 from flask import Blueprint, render_template, redirect, url_for, request, session
 from model.user import User, find_user, Account, Gender
 from datetime import date
+from .oauth_controller import oauth
+# import smtplib
+# import random
+# from email.mime.text import MIMEText
+# from email.mime.multipart import MIMEMultipart
 
 auth_bp = Blueprint("auth", __name__)
-
-google = None
-facebook = None
 
 #dang ky
 @auth_bp.route("/register", methods = ["GET", "POST"])
@@ -66,7 +68,7 @@ def logout():
   print("Da dang xuat")
   return redirect(url_for("home.index"))
 
-#SOCIAL
+#SOCIAL---------------------------------------------------------
 #DANG NHAP BANG GOOGLE
 
 @auth_bp.route("/login/google")
@@ -74,14 +76,13 @@ def google_login():
   redirect_uri = url_for("auth.authorize_google", _external=True)
   print("direct:")
   print(redirect_uri)
-  return google.authorize_redirect(redirect_uri)
+  return oauth.google.authorize_redirect(redirect_uri)
 
 @auth_bp.route("/callback/google")
 def authorize_google():
-  token = google.authorize_access_token()
-  resp = google.get("userinfo")
+  token = oauth.google.authorize_access_token()
+  resp = oauth.google.get("userinfo")
   user_info = resp.json()
-
   user = find_user(user_info["email"])
 
   if not user:
@@ -94,7 +95,7 @@ def authorize_google():
     new_user.save()
     user_account = Account(date.today(), Gender.OTHER, "Address GG not set", "ID Card GG not set", date.today(), "Place not set", user_id=new_user.id)
     user_account.save_account()
-    user = find_user(user_info["email"])
+    user = new_user
 
   if user:
     session["user"] = {
@@ -104,17 +105,18 @@ def authorize_google():
       "phone": "GG Phone not set"
     }
     return redirect(url_for("home.index"))
+  return redirect(url_for("auth.login"))
 
 #DANG NHAP BANG FACEBOOK
 @auth_bp.route("/login/facebook")
 def facebook_login():
   redirect_uri = url_for("auth.authorize_facebook", _external=True)
-  return facebook.authorize_redirect(redirect_uri)
+  return oauth.facebook.authorize_redirect(redirect_uri)
 
 @auth_bp.route("/callback/facebook")
 def authorize_facebook():
-  token = facebook.authorize_access_token()
-  resp = facebook.get('me?fields=id,name,picture')
+  token = oauth.facebook.authorize_access_token()
+  resp = oauth.facebook.get('me?fields=id,name,picture')
   user_info_fb = resp.json()
 
   user_info = {
@@ -124,7 +126,7 @@ def authorize_facebook():
   }
 
   print(user_info["name"], " ", user_info["id"])
-  placeholder_email = f"{user_info["id"]}@facebook.placeholder.com"
+  placeholder_email = f"{user_info["name"]}@example.com"
 
   user = find_user(placeholder_email)
   if not user:
@@ -135,11 +137,15 @@ def authorize_facebook():
       password="default_password"
     )
     new_user.save()
-    user = find_user(placeholder_email)
+    user_account = Account(date.today(), Gender.OTHER, "Address FB not set", "ID Card FB not set", date.today(), "Place not set", user_id=new_user.id)
+    user_account.save_account()
+    user = new_user
+
   if user:
     session["user"] = {
       "id": user.id,
       "name": user.name,
-      "email": user.email
+      "email": user.email,
+      "phone": "FB Phone not set"
     }
-  return redirect(url_for("home.index"))
+    return redirect(url_for("home.index"))
