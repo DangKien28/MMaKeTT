@@ -1,7 +1,7 @@
 from flask import Flask
 from controller import auth_controller, home_controller
 from config import Config
-from controller.oauth_controller import oauth, init_oauth
+from controller.oauth_controller import init_oauth
 
 app = Flask(__name__)
 app.config.from_object(Config)

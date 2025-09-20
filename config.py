@@ -10,6 +10,8 @@ class Config:
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
     FB_APP_ID = os.getenv("FB_APP_ID")
     FB_APP_SECRET = os.getenv("FB_APP_SECRET")
+    APP_EMAIL= os.getenv("APP_EMAIL")
+    APP_PASSWORD = os.getenv("APP_PASSWORD")
 
     # --- PHẦN SỬA LỖI DATABASE ---
     # Lấy DATABASE_URL từ môi trường của Render

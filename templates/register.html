@@ -18,6 +18,8 @@
       <h3>MMaKeTT Register</h3>
     </div>
 
+    <div id="message-area" class="mb-2 text-center"></div>
+
     <form id="register-form" action="/register" method="POST">
       <!-- Name -->
       <div class="form-group">
@@ -39,8 +41,9 @@
 
       <!-- Code -->
       <div class="d-flex mb-3">
-        <button type="button" class="btn btn-dark me-2">Send code</button>
-        <input type="text" class="form-control" placeholder="Enter code">
+        <button type="button" class="btn btn-dark me-2" id="send-code-btn">Send code</button>
+        <input type="text" class="form-control" id="code-input" placeholder="Enter code">
+        <button type="button" id="verify-code-btn" class="btn btn-info ms-2" disabled>Verify</button>
       </div>
 
       <!-- Password -->
@@ -52,12 +55,14 @@
       <!-- Confirm Password -->
       <div class="form-group">
         <i class="fa fa-lock"></i>
-        <input type="password" class="form-control" placeholder="Confirm password">
+        <input type="password" class="form-control" placeholder="Confirm password" id="confirm-password">
       </div>
 
-      <button type="submit" class="btn btn-primary btn-custom">Register</button>
+      <button type="submit" class="btn btn-primary btn-custom" id="register-btn" disabled>Register</button>
     </form>
     <p>Already have an account? <a href="{{url_for('auth.login')}}">Login</a></p>
   </div>
+
+  <script src="{{url_for('static', filename='js/register.js')}}"></script>
 </body>
 </html>

@@ -1,11 +1,11 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
+from flask import Blueprint, jsonify, render_template, redirect, url_for, request, session, current_app
 from model.user import User, find_user, Account, Gender
 from datetime import date
 from .oauth_controller import oauth
-# import smtplib
-# import random
-# from email.mime.text import MIMEText
-# from email.mime.multipart import MIMEMultipart
+import smtplib
+import random
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -26,10 +26,16 @@ def register():
     if user.check_account():
       print("Email da duoc dang ky")
       return render_template("register.html")
+    
+    
     user.save()
     
     user_account = Account(date.today(), Gender.OTHER, "Address not set", "ID Card not set", date.today(), "Place not set", user_id=user.id)
     user_account.save_account()
+
+    session.pop('verification_code', None)
+    session.pop('verification_email', None)
+    session.pop('is_verified', None)
 
     return redirect(url_for("auth.login"))
   return render_template("register.html")
@@ -149,3 +155,68 @@ def authorize_facebook():
       "phone": "FB Phone not set"
     }
     return redirect(url_for("home.index"))
+  
+def send_verification_email(recipient_email, code):
+  sender_email = current_app.config.get("APP_EMAIL")
+  sender_password = current_app.config.get("APP_PASSWORD")
+
+  if not sender_email or not sender_password:
+    print("Lỗi khi load APP_EMAIL và APP_PASSWORD")
+    return False
+  message = MIMEMultipart("alternative")
+  message["Subject"] = f"Mã xác thực MMaKeTT của bạn là {code}"
+  message["From"] = f"MMaKeTT <{sender_email}>"
+  message["To"] = recipient_email
+
+  html = f"""
+          <body>
+            <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
+              <h2>Xác thực tài khoản MMaKeTT</h2>
+              <p>Cảm ơn bạn đã đăng ký. Mã xác thực của bạn là:</p>
+              <p style="font-size: 24px; font-weight: bold; color: #007bff;">{code}</p>
+              <p>Vui lòng nhập mã này vào trang đăng ký để hoàn tất.</p>
+              <p style="font-size: 0.9em; color: #777;">Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email này.</p>
+            </div>
+          </body>
+        </html>
+          """
+  message.attach(MIMEText(html, "html"))
+
+  #Gửi email
+  with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+    server.login(sender_email, sender_password)
+    server.sendmail(sender_email, recipient_email, message.as_string())
+
+  print(f"Đã gửi email xác thực tới {recipient_email}")
+  return True
+
+#API mã xác thực
+@auth_bp.route("/send-verification-code", methods = ["POST"])
+def send_code():
+  data = request.get_json()
+  email = data.get("email")
+
+  code = f"{random.randint(0, 999999):06d}"
+
+  session['verification_code'] = code
+  session['verification_email'] = email
+  session['is_verified'] = False
+
+  if send_verification_email(email, code):
+    return jsonify({"message": "Mã xác thực đã được gửi tới email của bạn."}), 200
+  else:
+    return jsonify({"message": "Không thể gửi mã. Vui lòng thử lại sau."}), 500
+  
+@auth_bp.route('/verify-code', methods = ["POST"])
+def verify_code():
+  data = request.get_json()
+  user_code = data.get("code")
+  stored_code = session.get('verification_code')
+  if not stored_code:
+    return jsonify({"message": "Vui lòng yêu cầu gửi mã trước."}), 400
+
+  if user_code == stored_code:
+    session['is_verified'] = True # Cập nhật trạng thái đã xác thực
+    return jsonify({"message": "Xác thực thành công!"}), 200
+  else:
+    return jsonify({"message": "Mã xác thực không đúng."}), 400

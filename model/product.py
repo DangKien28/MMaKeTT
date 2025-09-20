@@ -1,7 +1,8 @@
 from . import get_db_connection
 
 class Product:
-  def __init__(self, name, price, rating, image_url):
+  def __init__(self, name, price, rating, image_url, product_id = None):
+    self.product_id = product_id
     self.name = name
     self.price = price
     self.rating = rating
@@ -34,3 +35,18 @@ def all_products():
     producs_list.append(product)
   return producs_list
   
+# def find_product_by_id(id):
+#   db = get_db_connection()
+#   cursor = db.cursor(dictionary=True)
+#   cursor.execute("SELECT * FROM products WHERE id=%s", (id))
+#   product = cursor.fetchone()
+#   db.close()
+#   if product:
+#     return Product(
+#       product_id=product["id"],
+#       name=product["product_name"],
+#       price=product["product_price"],
+#       rating=product["product_rating"],
+#       image_url=product["image_url"]
+#     )
+#   return None
