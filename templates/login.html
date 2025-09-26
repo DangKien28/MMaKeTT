@@ -16,8 +16,9 @@
       <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" width="50" alt="Logo">
       <h3>MMaKeTT Login</h3>
     </div>
+    <div id="message-area"></div>
 <!--form đăng nhập-->
-    <form id="login-form" action="/login" method="POST">
+    <form id="login-form" action="/api/login" method="POST">
       <!-- Email -->
       <div class="form-group">
         <i class="fa fa-envelope"></i>
@@ -30,7 +31,7 @@
         <input type="password" class="form-control" placeholder="Password" id="password" name="password">
       </div>
 
-      <button type="submit" class="btn btn-primary btn-custom">Login</button>      
+      <button type="submit" class="btn btn-primary btn-custom" id="login-btn" disabled>Login</button>      
     </form>
 <!--Đăng nhập bằng các nền tảng khác-->
     <div class="social-login">
@@ -51,5 +52,7 @@
       <b>You don't have account?</b>
       <a href="{{url_for('auth.register')}}"><button class="register-btn">Register</button></a>
     </div>
+
+    <script src="{{url_for('static', filename='js/login.js')}}"></script>
 </body>
 </html>

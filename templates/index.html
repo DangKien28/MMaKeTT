@@ -31,7 +31,7 @@
         <div class="header-actions">
             <div class="user-actions">
                 {% if user_info %}
-                    <a href="{{url_for('home.account_info')}}" class="account-button"><img src="{{ user_info.avatar_url or url_for('static', filename='images/avatar.jpg') }}" alt="User account" class="user-avatar"></a>
+                    <a href="{{url_for('home.account_page')}}" class="account-button"><img src="{{ user_info.avatar_url or url_for('static', filename='images/avatar.jpg') }}" alt="User account" class="user-avatar"></a>
                     <a href="#" class="cart-btn"><i class="fa-solid fa-cart-shopping"></i>🛒 $0.00(0)</a>
                     <a href="{{ url_for('auth.logout') }}" class="button-logout">Đăng xuất</a>
                 {% else %}

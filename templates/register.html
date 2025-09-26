@@ -14,13 +14,13 @@
 
   <div class="register-box">
     <div class="text-center mb-3">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" width="50" alt="Logo">
+      <a href="{{url_for('home.index')}}"><img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" width="50" alt="Logo"></a>
       <h3>MMaKeTT Register</h3>
     </div>
 
     <div id="message-area" class="mb-2 text-center"></div>
 
-    <form id="register-form" action="/register" method="POST">
+    <form id="register-form" action="/api/register" method="POST">
       <!-- Name -->
       <div class="form-group">
         <i class="fa fa-user"></i>
@@ -41,7 +41,7 @@
 
       <!-- Code -->
       <div class="d-flex mb-3">
-        <button type="button" class="btn btn-dark me-2" id="send-code-btn">Send code</button>
+        <button type="button" class="btn btn-dark me-2" id="send-code-btn" disabled>Send code</button>
         <input type="text" class="form-control" id="code-input" placeholder="Enter code">
         <button type="button" id="verify-code-btn" class="btn btn-info ms-2" disabled>Verify</button>
       </div>

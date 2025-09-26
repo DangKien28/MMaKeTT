@@ -32,7 +32,7 @@ class User:
     db.close()
     return row is not None
 
-def find_user(email):
+def find_user_by_email(email):
   db = get_db_connection()
   cursor = db.cursor(dictionary=True)
   cursor.execute(

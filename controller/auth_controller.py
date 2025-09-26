@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, render_template, redirect, url_for, request, session, current_app
-from model.user import User, find_user, Account, Gender
+from model.user import User, find_user_by_email, Account, Gender
 from datetime import date
 from .oauth_controller import oauth
 import smtplib
@@ -10,61 +10,87 @@ from email.mime.multipart import MIMEMultipart
 auth_bp = Blueprint("auth", __name__)
 
 #dang ky
-@auth_bp.route("/register", methods = ["GET", "POST"])
+@auth_bp.route("/register", methods = ["GET"])
 def register():
-  if request.method=="POST":
-    eMail = request.form.get("email")
-    name = request.form.get("username")
-    phone = request.form.get("phone")
-    password = request.form.get("password")
-
-    if not eMail or not name or not phone or not password:
-      print("Nhap day du thong tin moi duoc dang ky")
-      return render_template("register.html")
-    user = User(name, eMail, phone, password)
-
-    if user.check_account():
-      print("Email da duoc dang ky")
-      return render_template("register.html")
-    
-    
-    user.save()
-    
-    user_account = Account(date.today(), Gender.OTHER, "Address not set", "ID Card not set", date.today(), "Place not set", user_id=user.id)
-    user_account.save_account()
-
-    session.pop('verification_code', None)
-    session.pop('verification_email', None)
-    session.pop('is_verified', None)
-
-    return redirect(url_for("auth.login"))
   return render_template("register.html")
   
+@auth_bp.route('/api/register', methods = ["POST"])
+def api_register():
+  username = request.form.get("username")
+  email = request.form.get("email")
+  phone = request.form.get("phone")
+  password = request.form.get("password")
+
+  user = User(username, email, phone, password)
+  user.save()
+  userAccount = Account(date.today(), Gender.OTHER, "default not set", "default not set", date.today(), "default not set", user_id=user.id)
+  userAccount.save_account()
+  return redirect(url_for("auth.login"))
+
+@auth_bp.route('/api/check_email', methods = ["POST"])
+def check_email():
+  data = request.get_json()
+  email_to_check = data.get("email")
+  temp_user = find_user_by_email(email_to_check)
+
+  if temp_user:
+    return jsonify({"status_user": True})
+  else:
+    return jsonify({"status_user": False})
+
 #dang nhap
-@auth_bp.route("/login", methods = ["GET", "POST"])
+# @auth_bp.route("/login", methods = ["GET", "POST"])
+# def login():
+#   if request.method=="POST":
+#     eMail = request.form.get("email")
+#     password = request.form.get("password")
+
+#     result = find_user_by_email(eMail)
+
+#     if result and result.password==password:
+#       print("Tim thay tai khoan------------------------------------")
+#       print("Ket qua result sau khi tim: ", result.email, result.password)
+#       session["user"] = {
+#         "id": result.id,
+#         "email": result.email,
+#         "name": result.name,
+#         "phone": result.phone
+#       }
+#       print("session: ", result.email, " ", result.name)
+#       return redirect(url_for("home.index"))
+#     else:
+#       print("Sai email or mat khau")
+#       return redirect(url_for("auth.login"))
+#   return render_template("login.html")
+  
+@auth_bp.route("/login", methods = ["GET"])
 def login():
-  if request.method=="POST":
-    eMail = request.form.get("email")
-    password = request.form.get("password")
-
-    result = find_user(eMail)
-    
-
-    if result and result.password==password:
-      print("Tim thay tai khoan------------------------------------")
-      print("Ket qua result sau khi tim: ", result.email, result.password)
-      session["user"] = {
-        "id": result.id,
-        "email": result.email,
-        "name": result.name,
-        "phone": result.phone
-      }
-      print("session: ", result.email, " ", result.name)
-      return redirect(url_for("home.index"))
-    else:
-      print("Sai email or mat khau")
-      return redirect(url_for("auth.login"))
   return render_template("login.html")
+
+@auth_bp.route("/api/login", methods = ["POST"])
+def api_login():
+  login_data = request.get_json()
+  login_email = login_data["email"]
+  login_password = login_data["password"]
+
+  temp_user = find_user_by_email(login_email)
+  if (not temp_user):
+    return jsonify({"status": "not-register"})
+  else:
+    if login_password != temp_user.password:
+      return jsonify({"error": "incorrect-password"})
+    else:
+      session["user"] = {
+        "id": temp_user.id,
+        "email": temp_user.email,
+        "name": temp_user.name
+      }
+      return jsonify(
+        {
+          "status": "success",
+          "redirect_url": url_for("home.index")
+        }
+      )
   
 
 #dang xuat
@@ -89,7 +115,7 @@ def authorize_google():
   token = oauth.google.authorize_access_token()
   resp = oauth.google.get("userinfo")
   user_info = resp.json()
-  user = find_user(user_info["email"])
+  user = find_user_by_email(user_info["email"])
 
   if not user:
     new_user = User(
@@ -134,7 +160,7 @@ def authorize_facebook():
   print(user_info["name"], " ", user_info["id"])
   placeholder_email = f"{user_info["name"]}@example.com"
 
-  user = find_user(placeholder_email)
+  user = find_user_by_email(placeholder_email)
   if not user:
     new_user = User(
       name=user_info["name"],
@@ -155,7 +181,9 @@ def authorize_facebook():
       "phone": "FB Phone not set"
     }
     return redirect(url_for("home.index"))
-  
+
+
+#Gửi email xác thực
 def send_verification_email(recipient_email, code):
   sender_email = current_app.config.get("APP_EMAIL")
   sender_password = current_app.config.get("APP_PASSWORD")
@@ -203,9 +231,9 @@ def send_code():
   session['is_verified'] = False
 
   if send_verification_email(email, code):
-    return jsonify({"message": "Mã xác thực đã được gửi tới email của bạn."}), 200
+    return jsonify({"message": "success"}), 200
   else:
-    return jsonify({"message": "Không thể gửi mã. Vui lòng thử lại sau."}), 500
+    return jsonify({"message": "failed"}), 500
   
 @auth_bp.route('/verify-code', methods = ["POST"])
 def verify_code():
@@ -213,10 +241,16 @@ def verify_code():
   user_code = data.get("code")
   stored_code = session.get('verification_code')
   if not stored_code:
-    return jsonify({"message": "Vui lòng yêu cầu gửi mã trước."}), 400
+    return jsonify({"message": "required"}), 400
 
+  print(stored_code)
+  print(user_code)
   if user_code == stored_code:
     session['is_verified'] = True # Cập nhật trạng thái đã xác thực
-    return jsonify({"message": "Xác thực thành công!"}), 200
+    session.pop("verification_code")
+    return jsonify({"message": "Verified"}), 200
+
   else:
-    return jsonify({"message": "Mã xác thực không đúng."}), 400
+    return jsonify({"message": "Un-verify"}), 400
+  
+
