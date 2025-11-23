@@ -2,9 +2,11 @@ from flask import Flask
 from controller import auth_controller, home_controller
 from config import Config
 from controller.oauth_controller import init_oauth
+from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
 app.config.from_object(Config)
+jwt = JWTManager(app)
 
 init_oauth(app)
 # auth_controller.google = google

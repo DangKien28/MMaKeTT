@@ -2,10 +2,10 @@ from flask import Blueprint, jsonify, render_template, redirect, url_for, reques
 from model.user import User, find_user_by_email, Account, Gender
 from datetime import date
 from .oauth_controller import oauth
-import smtplib
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, From
 import random
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -38,30 +38,6 @@ def check_email():
   else:
     return jsonify({"status_user": False})
 
-#dang nhap
-# @auth_bp.route("/login", methods = ["GET", "POST"])
-# def login():
-#   if request.method=="POST":
-#     eMail = request.form.get("email")
-#     password = request.form.get("password")
-
-#     result = find_user_by_email(eMail)
-
-#     if result and result.password==password:
-#       print("Tim thay tai khoan------------------------------------")
-#       print("Ket qua result sau khi tim: ", result.email, result.password)
-#       session["user"] = {
-#         "id": result.id,
-#         "email": result.email,
-#         "name": result.name,
-#         "phone": result.phone
-#       }
-#       print("session: ", result.email, " ", result.name)
-#       return redirect(url_for("home.index"))
-#     else:
-#       print("Sai email or mat khau")
-#       return redirect(url_for("auth.login"))
-#   return render_template("login.html")
   
 @auth_bp.route("/login", methods = ["GET"])
 def login():
@@ -80,25 +56,21 @@ def api_login():
     if login_password != temp_user.password:
       return jsonify({"error": "incorrect-password"})
     else:
-      session["user"] = {
-        "id": temp_user.id,
-        "email": temp_user.email,
-        "name": temp_user.name
-      }
-      return jsonify(
-        {
-          "status": "success",
-          "redirect_url": url_for("home.index")
-        }
-      )
-  
+      access_token = create_access_token(identity=str(temp_user.id))
+      resp = jsonify({
+        "status": "success",
+        "redirect_url": url_for("home.index")
+      })
+      set_access_cookies(resp, access_token)
+      return resp
 
 #dang xuat
 @auth_bp.route("/logout")
 def logout():
-  session.clear()
+  resp = redirect(url_for("home.index"))
+  unset_jwt_cookies(resp)
   print("Da dang xuat")
-  return redirect(url_for("home.index"))
+  return resp
 
 #SOCIAL---------------------------------------------------------
 #DANG NHAP BANG GOOGLE
@@ -130,13 +102,11 @@ def authorize_google():
     user = new_user
 
   if user:
-    session["user"] = {
-      "id": user.id,
-      "name": user.name,
-      "email": user.email,
-      "phone": "GG Phone not set"
-    }
-    return redirect(url_for("home.index"))
+    access_token = create_access_token(identity=str(user.id))
+    response = redirect(url_for("home.index"))
+    set_access_cookies(response, access_token)
+    return response
+  
   return redirect(url_for("auth.login"))
 
 #DANG NHAP BANG FACEBOOK
@@ -174,56 +144,62 @@ def authorize_facebook():
     user = new_user
 
   if user:
-    session["user"] = {
-      "id": user.id,
-      "name": user.name,
-      "email": user.email,
-      "phone": "FB Phone not set"
-    }
-    return redirect(url_for("home.index"))
+    access_token = create_access_token(str(user.id))
+    response = redirect(url_for("home.index"))
+    set_access_cookies(response, access_token)
+    return response
+  return redirect(url_for("auth.login"))
 
 
-#Gửi email xác thực
 def send_verification_email(recipient_email, code):
-  sender_email = current_app.config.get("APP_EMAIL")
-  sender_password = current_app.config.get("APP_PASSWORD")
+  sender_email = current_app.config.get("SENDGRID_MAIL")
+  api_key = current_app.config.get("SENDGRID_KEY")
 
-  if not sender_email or not sender_password:
-    print("Lỗi khi load APP_EMAIL và APP_PASSWORD")
+  if not sender_email or not api_key:
+    print("Lỗi khi không tìm thấy SENDGRID_MAIL hoặc SENDGRID_KEY")
     return False
-  message = MIMEMultipart("alternative")
-  message["Subject"] = f"Mã xác thực MMaKeTT của bạn là {code}"
-  message["From"] = f"MMaKeTT <{sender_email}>"
-  message["To"] = recipient_email
+  
+  html_content = f"""
+    <html>
+      <body>
+        <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
+          <h2>Xác thực tài khoản MMaKeTT</h2>
+          <p>Cảm ơn bạn đã đăng ký. Mã xác thực của bạn là:</p>
+          <p style="font-size: 24px; font-weight: bold; color: #007bff;">{code}</p>
+        </div>
+      </body>
+    </html>
+  """
 
-  html = f"""
-          <body>
-            <div style="font-family: Arial, sans-serif; text-align: center; color: #333;">
-              <h2>Xác thực tài khoản MMaKeTT</h2>
-              <p>Cảm ơn bạn đã đăng ký. Mã xác thực của bạn là:</p>
-              <p style="font-size: 24px; font-weight: bold; color: #007bff;">{code}</p>
-              <p>Vui lòng nhập mã này vào trang đăng ký để hoàn tất.</p>
-              <p style="font-size: 0.9em; color: #777;">Nếu bạn không yêu cầu mã này, vui lòng bỏ qua email này.</p>
-            </div>
-          </body>
-        </html>
-          """
-  message.attach(MIMEText(html, "html"))
+  message = Mail(
+    from_email=From(sender_email, 'MMaKeTT'),
+    to_emails=recipient_email,
+    subject=f"Mã xác thực MMaKeTT của bạn là {code}",
+    html_content=html_content
+  )
 
-  #Gửi email
-  with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
-    server.login(sender_email, sender_password)
-    server.sendmail(sender_email, recipient_email, message.as_string())
+  try:
+    sg = SendGridAPIClient(api_key)
+    response = sg.send(message)
 
-  print(f"Đã gửi email xác thực tới {recipient_email}")
-  return True
-
-#API mã xác thực
-@auth_bp.route("/send-verification-code", methods = ["POST"])
-def send_code():
+    print(f"Email đã gửi")
+    return response.status_code == 202
+  except Exception as e:
+    print(f"Lỗi khi gửi email qua Sendgrid {e}")
+    return False
+  
+@auth_bp.route("/send-verification-code", methods=["POST"])
+def send_email():
   data = request.get_json()
   email = data.get("email")
 
+  if not email:
+    return jsonify(
+      {
+        "message": "Email là bắt buộc"
+      }
+    ), 400
+  
   code = f"{random.randint(0, 999999):06d}"
 
   session['verification_code'] = code
@@ -231,10 +207,12 @@ def send_code():
   session['is_verified'] = False
 
   if send_verification_email(email, code):
-    return jsonify({"message": "success"}), 200
+    return jsonify({"message": "Send success"}), 200
   else:
-    return jsonify({"message": "failed"}), 500
-  
+    session.pop('verification_code', None)
+    session.pop('verification_email', None)
+    return jsonify({"message":"Send failed"}), 500
+
 @auth_bp.route('/verify-code', methods = ["POST"])
 def verify_code():
   data = request.get_json()

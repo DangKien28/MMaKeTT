@@ -31,6 +31,16 @@ class User:
     row = cursor.fetchone()
     db.close()
     return row is not None
+  
+def find_user_by_id(id):
+  db = get_db_connection()
+  cursor = db.cursor(dictionary=True)
+  cursor.execute("SELECT * FROM users WHERE id=%s", (id,))
+  row = cursor.fetchone()
+  db.close()
+  if row:
+    return User(id=row["id"], name=row["name"], email=row["email"], phone=row["phone"], password=row["password"])
+  return None
 
 def find_user_by_email(email):
   db = get_db_connection()

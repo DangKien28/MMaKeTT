@@ -13,6 +13,9 @@ class Config:
     APP_EMAIL= os.getenv("APP_EMAIL")
     APP_PASSWORD = os.getenv("APP_PASSWORD")
 
+    SENDGRID_MAIL =  os.getenv("SENDGRID_MAIL")
+    SENDGRID_KEY = os.getenv("SENDGRID_KEY")
+
     # --- PHẦN SỬA LỖI DATABASE ---
     # Lấy DATABASE_URL từ môi trường của Render
     DATABASE_URL = os.getenv('DATABASE_URL')
@@ -23,6 +26,11 @@ class Config:
         SQLALCHEMY_DATABASE_URI = DATABASE_URL
     else:
         # Nếu không, (chạy local), dùng database MySQL của bạn
-        SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:your_password@localhost/your_database_name"
+        SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:Dtk.281005@localhost/userdb"
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    JWT_SECRET_KEY = "MMaKeTT_Shop"
+    JWT_TOKEN_LOCATION = ["cookies"]
+    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_ACCESS_COOKIE_NAME = "Access_to_MMaKeTT"
