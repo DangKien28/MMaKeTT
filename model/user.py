@@ -54,6 +54,14 @@ def find_user_by_email(email):
   if row:
     return User(id=row["id"], name=row["name"], email=row["email"], phone=row["phone"], password=row["password"])
   return None
+
+def update_password_by_id(id, new_password):
+  db = get_db_connection()
+  cursor = db.cursor()
+  cursor.execute("UPDATE users SET password = %s WHERE id = %s", (new_password, id))
+  db.commit()
+  db.close()
+  return True
   
 class Gender(Enum):
   MALE = "Male"

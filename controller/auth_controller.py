@@ -1,11 +1,11 @@
 from flask import Blueprint, jsonify, render_template, redirect, url_for, request, session, current_app
-from model.user import User, find_user_by_email, Account, Gender
+from model.user import User, find_user_by_email, Account, Gender, update_password_by_id
 from datetime import date
 from .oauth_controller import oauth
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, From
 import random
-from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import create_access_token, set_access_cookies, unset_jwt_cookies, jwt_required, get_jwt_identity
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -231,4 +231,45 @@ def verify_code():
   else:
     return jsonify({"message": "Un-verify"}), 400
   
+@auth_bp.route("/api/change-password", methods=["POST"])
+@jwt_required()
+def change_password():
+  id = get_jwt_identity()
+  data = request.get_json()
+  code = data.get("code")
+  new_password = data.get("new_password")
 
+  stored_code = session.get("verification_code")
+
+  if not stored_code or code!=stored_code:
+    return jsonify(
+      {
+        "status": "error",
+        "message": "Mã xác thực không đúng hoặc đã hết hạn"
+      }
+    )
+  
+  try:
+    update_password_by_id(id, new_password)
+
+    session.pop("verification_code", None)
+    session.pop("verification_email", None)
+    session.pop("is_verified", None)
+
+    resp = jsonify(
+      {
+        "status": "success",
+        "message": "Đổi mật khẩu thành công. Đăng nhập lại!"
+      }
+    )
+    unset_jwt_cookies(resp)
+    return resp, 200
+  except Exception as e:
+    print(f"Lỗi đổi mật khẩu: {e}")
+    return jsonify(
+      {
+        "status": "error",
+        "message": "Lỗi hệ thống"
+      }
+    ), 500
+  

@@ -15,6 +15,7 @@ __pycache__/
 # =========================
 .env
 *.env
+VerifyCode.txt
 config.py     # nếu chứa thông tin mật
 instance/
 secrets.json
