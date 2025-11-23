@@ -52,7 +52,6 @@ required.forEach(field => {
 
 email.addEventListener('blur', async () => {
   const email_value = email.value
-  console.log(email_value)
   if (email_value)
   {
     const response = await fetch("/api/check_email", {
