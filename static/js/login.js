@@ -79,3 +79,10 @@ function showMessage(mes, type) {
     message.style.color = "#155724";
   }
 }
+
+const resetPass = document.getElementById("forgot-password")
+resetPass.addEventListener("click", resetPassword)
+function resetPassword()
+{
+  console.log("forgot-password")
+}

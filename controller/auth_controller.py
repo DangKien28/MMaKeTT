@@ -273,3 +273,91 @@ def change_password():
       }
     ), 500
   
+@auth_bp.route("/forgot-password", methods=["GET"])
+def forgot_password_page():
+  return render_template("forgot_password.html")
+
+@auth_bp.route("/api/forgot-password/send-code", methods=["POST"])
+def forgot_send_code():
+  data = request.get_json()
+  email = data.get("email")
+
+  if not email:
+    return jsonify(
+      {
+        "message": "Vui lòng nhập email"
+      }
+    ), 400
+  
+  user = find_user_by_email(email)
+  if not user:
+    return jsonify(
+      {
+        "message": "Email không tồn tại"
+      }
+    ), 404
+  
+  code = f"{random.randint(0, 999999):06d}"
+  session["fp_email"] = email
+  session["fp_code"] = code
+  session["fp_verified"] = False
+
+  if send_verification_email(email, code):
+    return jsonify(
+      {
+        "message": "Mã xác thực được gửi"
+      }
+    ), 200
+  else:
+    return jsonify(
+      {
+        "message": "Lỗi gửi email"
+      }
+    ), 500
+  
+@auth_bp.route("/api/forgot-password/verify-code", methods=["POST"])
+def forgot_verify_code():
+  data = request.get_json()
+  user_code = data.get("code")
+    
+  stored_code = session.get('fp_code')
+  stored_email = session.get('fp_email')
+
+  if not stored_code or not stored_email:
+    return jsonify({"message": "Yêu cầu hết hạn, vui lòng gửi lại mã"}), 400
+
+  if user_code == stored_code:
+    session['fp_verified'] = True 
+    return jsonify({"message": "Mã chính xác"}), 200
+  else:
+    return jsonify({"message": "Mã xác thực không đúng"}), 400
+  
+@auth_bp.route("/api/forgot-password/reset", methods=["POST"])
+def forgot_reset_password():
+  if not session.get('fp_verified') or not session.get('fp_email'):
+    return jsonify({"message": "Yêu cầu không hợp lệ"}), 403
+
+  data = request.get_json()
+  new_password = data.get("password")
+
+  if not new_password:
+    return jsonify({"message": "Vui lòng nhập mật khẩu mới"}), 400
+
+  email = session.get('fp_email')
+  user = find_user_by_email(email)
+    
+  if user:
+    try:
+      update_password_by_id(user.id, new_password)
+            
+            
+      session.pop('fp_email', None)
+      session.pop('fp_code', None)
+      session.pop('fp_verified', None)
+            
+      return jsonify({"message": "Đổi mật khẩu thành công"}), 200
+    except Exception as e:
+      print(f"Lỗi DB: {e}")
+      return jsonify({"message": "Lỗi hệ thống"}), 500
+    
+  return jsonify({"message": "Không tìm thấy user"}), 404
