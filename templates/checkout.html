@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh Toán</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <h1>💳 Thanh Toán An Toàn</h1>
+            <nav><a href="/cart" class="nav-link">Quay lại Giỏ hàng</a></nav>
+        </div>
+    </header>
+
+    <main class="container checkout-layout">
+        <!-- Cột Trái: Thông tin giao hàng & Thanh toán (MMK-98, 101, 100) -->
+        <div class="checkout-form">
+            <h2>1. Thông tin giao hàng</h2>
+            <div class="form-group">
+                <label>Họ và tên (*)</label>
+                <input type="text" id="cust-name" placeholder="Nguyễn Văn A">
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại (*)</label>
+                <input type="text" id="cust-phone" placeholder="09xxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>Địa chỉ nhận hàng (*)</label>
+                <textarea id="cust-address" rows="3" placeholder="Số nhà, đường, phường/xã..."></textarea>
+            </div>
+
+            <h2>2. Phương thức thanh toán (MMK-100)</h2>
+            <div class="payment-methods">
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="cod" checked>
+                    <span>💸 Thanh toán khi nhận hàng (COD) (MMK-103)</span>
+                </label>
+                <label class="payment-option">
+                    <input type="radio" name="payment" value="banking">
+                    <span>💳 Chuyển khoản ngân hàng / Visa (MMK-104)</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Cột Phải: Tóm tắt đơn hàng (MMK-99) -->
+        <div class="checkout-summary">
+            <h3>Đơn hàng của bạn</h3>
+            <div id="checkout-items">Loading...</div>
+            <hr>
+            <div class="summary-row"><span>Tạm tính:</span> <span id="co-subtotal">0 đ</span></div>
+            <div class="summary-row"><span>Phí ship:</span> <span id="co-shipping">0 đ</span></div>
+            <div class="summary-row" style="color:green"><span>Giảm giá:</span> <span id="co-discount">0 đ</span></div>
+            <div class="summary-row total">
+                <strong>Thành tiền:</strong>
+                <strong id="co-total" style="color: #d35400; font-size: 1.5em;">0 đ</strong>
+            </div>
+
+            <!-- Nút đặt hàng (MMK-96) -->
+            <button onclick="submitOrder()" class="action-btn primary full-width" style="margin-top: 20px; font-size: 18px;">
+                ĐẶT HÀNG NGAY
+            </button>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>document.addEventListener('DOMContentLoaded', initCheckoutPage);</script>
+</body>
+</html>

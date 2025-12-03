@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Thiết lập hồ sơ gian hàng (MMK-51,58,57,56)</h2>
+<p>Chọn seller:</p>
+<select id="sellerSelect"></select>
+<form id="shopForm" enctype="multipart/form-data">
+  <input type="hidden" name="seller_id" id="seller_id">
+  <label>Shop name: <input name="shop_name" id="shop_name"></label><br>
+  <label>Description:<br><textarea name="description" id="description"></textarea></label><br>
+  <label>Avatar: <input type="file" name="avatar"></label><br>
+  <label>Banner: <input type="file" name="banner"></label><br>
+  <button type="submit">Lưu hồ sơ</button>
+</form>
+
+<h3>Update address</h3>
+<form id="addrForm">
+  <input type="hidden" id="aid" name="seller_id">
+  <textarea name="address" id="address"></textarea><br>
+  <button type="submit">Lưu địa chỉ</button>
+</form>
+
+<h3>Chính sách giao hàng & đổi trả</h3>
+<form id="policyForm">
+  <input type="hidden" id="pid" name="seller_id">
+  <textarea name="policy" id="policy"></textarea><br>
+  <button type="submit">Lưu policy</button>
+</form>
+
+<div id="out"></div>
+
+<script>
+async function load(){
+  const res = await fetch('/api/sellers');
+  const data = await res.json();
+  const sel = document.getElementById('sellerSelect');
+  sel.innerHTML = '';
+  data.forEach(s => {
+    const o = document.createElement('option'); o.value = s.id; o.text = s.id+' - '+s.username+' ('+s.status+')';
+    sel.appendChild(o);
+  });
+  if(data.length){ sel.value = data[0].id; setSeller(data[0].id); }
+}
+function setSeller(id){
+  document.getElementById('seller_id').value = id;
+  document.getElementById('aid').value = id;
+  document.getElementById('pid').value = id;
+}
+document.getElementById('sellerSelect').addEventListener('change',(e)=> setSeller(e.target.value));
+
+document.getElementById('shopForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const res = await fetch('/api/shop/setup', {method:'POST', body: form});
+  document.getElementById('out').innerText = JSON.stringify(await res.json());
+  load();
+});
+
+document.getElementById('addrForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const res = await fetch('/api/shop/address', {method:'POST', body: form});
+  document.getElementById('out').innerText = JSON.stringify(await res.json());
+  load();
+});
+
+document.getElementById('policyForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const form = new FormData(e.target);
+  const res = await fetch('/api/shop/policy', {method:'POST', body: form});
+  document.getElementById('out').innerText = JSON.stringify(await res.json());
+  load();
+});
+
+load();
+</script>
+{% endblock %}

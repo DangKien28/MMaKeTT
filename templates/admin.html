@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Duyệt Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <h1>🛡️ Admin Dashboard</h1>
+            <nav>
+                <a href="/" class="nav-link">Mua Sắm</a>
+                <a href="/seller" class="nav-link">Kênh Người Bán</a>
+                <a href="/admin" class="nav-link active">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>📋 Quy Trình Xét Duyệt Người Bán (MMK-50)</h2>
+        <button onclick="loadAdminShops()" class="action-btn">Làm mới danh sách</button>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Chủ Shop</th>
+                    <th>Email</th>
+                    <th>Giấy Phép</th>
+                    <th>Trạng Thái</th>
+                    <th>Hành Động (MMK-61)</th>
+                </tr>
+            </thead>
+            <tbody id="admin-shop-list">
+                </tbody>
+        </table>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadAdminShops);
+    </script>
+</body>
+</html>

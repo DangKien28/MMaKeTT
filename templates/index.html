@@ -18,21 +18,23 @@
     <!-- Header -->
     <header class="header">
         <div class="logo">
-            <div class="logo-circle"><a href="{{url_for('home.index')}}">M</a></div>
+            <div class="logo-circle">M</div>
             <div class="logo-text">MMakeTT</div>
         </div>
         
         <div class="search-container">
-            <input type="text" class="search-box" placeholder="Search for..." id="search_input">
-            <!-- <span class="search-icon">🔍</span> -->
-            <button class="search-icon" id="search_icon">🔍</button>
+            <input type="text" class="search-box" placeholder="Search for...">
+            <span class="search-icon">🔍</span>
         </div>
         
         <div class="header-actions">
+            <!-- <a href="#" class="account-btn">Account</a>
+            <a href="#" class="cart-btn">🛒 $0.00(0)</a> -->
+
             <div class="user-actions">
                 {% if user_info %}
-                    <a href="{{url_for('home.account_page')}}" class="account-button"><img src="{{ user_info.avatar_url or url_for('static', filename='images/avatar.jpg') }}" alt="User account" class="user-avatar"></a>
-                    <a href="{{url_for('cart.view_cart')}}" class="cart-btn"><i class="fa-solid fa-cart-shopping"></i>🛒 Giỏ hàng</a>
+                    <a href="#" class="account-button"><img src="{{ user_info.avatar_url or url_for('static', filename='images/avatar.jpg') }}" alt="User account" class="user-avatar"></a>
+                    <a href="#" class="cart-btn"><i class="fa-solid fa-cart-shopping"></i>🛒 $0.00(0)</a>
                     <a href="{{ url_for('auth.logout') }}" class="button-logout">Đăng xuất</a>
                 {% else %}
                     <a href="{{ url_for('auth.register') }}" class="button-register">Đăng ký</a>
@@ -82,7 +84,7 @@
     <section class="products-section">
         <h2 class="section-title">DISCOVER NOW</h2>
         <div class="products-grid">
-            <!-- {% for product in products %}
+            {% for product in products %}
             <div class="product-card">
                 <div class="product-image">
                     <div class="sale-badge"></div>
@@ -94,16 +96,13 @@
                     <div class="product-rating">{{"{:,.0f}".format(product.rating)}}/5⭐️</div>
                     <div class="product-buttons">
                         <a href="#" class="btn btn-primary">MUA NGAY</a>
-                        
-                        <button class="btn btn-secondary" type="button">
-                            Thêm vào giỏ hàng
-                        </button>
-
+                        <a href="#" class="btn btn-secondary">XEM CHI TIẾT</a>
                     </div>
                 </div>
             </div>
             {%else%}
-            {%endfor%} -->
+                <p>Hiện chưa có sản phẩm để hiển thị</p>
+            {%endfor%}
 
             <!-- Product 1 : SẢN PHẨM MẪU-->
             <div class="product-card">

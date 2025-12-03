@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Trang Chủ - Mua Sắm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Banner Thông Báo (Epic 6 - MMK-133) -->
+    <div class="promo-banner">
+        🎉 <strong>HOT:</strong> Nhập mã <span>GIAM10</span> để được giảm giá 10% ngay hôm nay!
+    </div>
+
+    <header class="header">
+        <div class="nav-container">
+            <h1>🛍️ MMK Market</h1>
+            <nav>
+                <a href="/" class="nav-link active">Mua Sắm</a>
+
+                <!-- Nút Thông Báo (Epic 6 - MMK-131) -->
+                <div class="nav-item-dropdown">
+                    <span class="nav-link" onclick="toggleNoti()" style="cursor:pointer">
+                        🔔 Thông báo <span id="noti-badge" class="badge hidden">0</span>
+                    </span>
+                    <!-- Dropdown chứa danh sách -->
+                    <div id="noti-dropdown" class="dropdown-content hidden">
+                        <div class="dropdown-header">Thông báo mới nhận</div>
+                        <div id="noti-list">Đang tải...</div>
+                    </div>
+                </div>
+
+                <!-- Thêm link Hồ sơ (Epic 9) -->
+                <a href="/profile" class="nav-link">👤 Hồ Sơ</a>
+                <a href="/my-orders" class="nav-link">📦 Đơn Mua</a>
+                <a href="/cart" class="nav-link">🛒 Giỏ Hàng</a>
+                <a href="/seller" class="nav-link">Kênh Người Bán</a>
+                <a href="/admin" class="nav-link">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Khu vực Gợi ý Sản phẩm -->
+        <section class="suggestions-section">
+            <h2>✨ Gợi ý cho bạn</h2>
+            <div id="behavioral-suggestions" class="suggestion-group">
+                <h3>Theo Hành Vi</h3>
+                <div id="behavioral-list" class="product-list"></div>
+            </div>
+            <div id="trending-suggestions" class="suggestion-group">
+                <h3>Thịnh Hành</h3>
+                <div id="trending-list" class="product-list"></div>
+            </div>
+        </section>
+
+        <!-- Khu vực Tìm kiếm -->
+        <section class="search-section">
+            <h2>🔎 Tìm Kiếm Sản Phẩm</h2>
+            <div class="search-controls">
+                <input type="text" id="keyword" placeholder="Nhập tên sản phẩm..." class="search-input">
+                <select id="vendor-filter">
+                    <option value="">Tất cả hãng</option>
+                    <option value="logitech">Logitech</option>
+                    <option value="sony">Sony</option>
+                </select>
+                <select id="category-filter">
+                    <option value="">Tất cả danh mục</option>
+                    <option value="Phụ kiện">Phụ kiện</option>
+                    <option value="Máy tính">Máy tính</option>
+                </select>
+                <button id="search-button" class="search-button">Tìm</button>
+            </div>
+            <h3 id="result-count"></h3>
+            <div id="product-results" class="product-list"></div>
+        </section>
+    </main>
+
+    <!-- 1. Modal Chọn Biến Thể (Epic 4) -->
+    <div id="product-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-body">
+                <h3 id="modal-p-name">Tên Sản Phẩm</h3>
+                <p id="modal-p-price" class="product-price">0 đ</p>
+
+                <div id="modal-variants-area">
+                    <p><strong>Chọn phân loại:</strong></p>
+                    <div id="variant-options" class="variant-container"></div>
+                </div>
+
+                <div class="quantity-selector">
+                    <strong>Số lượng:</strong>
+                    <input type="number" id="modal-qty" value="1" min="1" max="10">
+                </div>
+
+                <div id="stock-status" style="margin: 10px 0; font-size: 14px;"></div>
+
+                <button id="confirm-add-btn" class="action-btn primary full-width">Thêm Vào Giỏ Hàng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Toast Notification (Epic 4) -->
+    <div id="toast" class="toast hidden">Thêm thành công!</div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Khởi chạy logic trang chủ
+        document.addEventListener('DOMContentLoaded', initHomePage);
+    </script>
+</body>
+
+</html>

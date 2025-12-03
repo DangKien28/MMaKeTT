@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Xác minh Email/SĐT (MMK-54)</h2>
+<label>Seller ID: <input id="sid" type="number"></label><br>
+<button id="sendEmail">Gửi mã Email</button>
+<button id="sendPhone">Gửi mã Phone</button>
+<button id="verifyEmail">Đánh dấu Email verified</button>
+<button id="verifyPhone">Đánh dấu Phone verified</button>
+<div id="out"></div>
+<script>
+document.getElementById('sendEmail').onclick = async ()=>{
+  let sid = document.getElementById('sid').value;
+  let res = await fetch('/api/send-verify/'+sid, {method:'POST'});
+  document.getElementById('out').innerText = JSON.stringify(await res.json());
+}
+document.getElementById('verifyEmail').onclick = async ()=>{
+  let sid = document.getElementById('sid').value;
+  let res = await fetch('/api/verify-email/'+sid, {method:'POST'});
+  document.getElementById('out').innerText = JSON.stringify(await res.json());
+}
+document.getElementById('verifyPhone').onclick = async ()=>{
+  let sid = document.getElementById('sid').value;
+  let res = await fetch('/api/verify-phone/'+sid, {method:'POST'});
+  document.getElementById('out').innerText = JSON.stringify(await res.json());
+}
+</script>
+{% endblock %}

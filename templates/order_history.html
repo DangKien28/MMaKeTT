@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đơn Hàng Của Tôi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <h1>📦 Đơn Hàng Của Tôi</h1>
+            <nav>
+                <a href="/" class="nav-link">Mua Sắm</a>
+                <a href="/profile" class="nav-link">Hồ Sơ</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2 style="margin-bottom: 20px;">Lịch Sử Đặt Hàng (MMK-179)</h2>
+        <div class="section-box">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Mã Đơn</th>
+                        <th>Ngày Đặt</th>
+                        <th>Tổng Tiền</th>
+                        <th>Trạng Thái</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="order-history-list">
+                    <!-- JS sẽ render vào đây -->
+                </tbody>
+            </table>
+            <div id="empty-history" class="hidden" style="text-align:center; padding:20px;">
+                <p>Bạn chưa có đơn hàng nào.</p>
+                <a href="/" class="action-btn primary">Mua Ngay</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>document.addEventListener('DOMContentLoaded', loadOrderHistory);</script>
+</body>
+</html>

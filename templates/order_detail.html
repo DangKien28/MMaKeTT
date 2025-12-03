@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi Tiết Đơn Hàng</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <h1>🧾 Theo Dõi Đơn Hàng (MMK-178)</h1>
+            <nav><a href="/my-orders" class="nav-link">Quay lại Danh sách</a></nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- 1. Thanh trạng thái (Stepper) -->
+        <div class="section-box track-box">
+            <div class="track-step" id="step-pending">
+                <div class="icon">📝</div>
+                <div class="text">Chờ xác nhận</div>
+            </div>
+            <div class="track-line"></div>
+            <div class="track-step" id="step-confirmed">
+                <div class="icon">📦</div>
+                <div class="text">Đã xác nhận</div>
+            </div>
+            <div class="track-line"></div>
+            <div class="track-step" id="step-shipping">
+                <div class="icon">🚚</div>
+                <div class="text">Đang giao</div>
+            </div>
+            <div class="track-line"></div>
+            <div class="track-step" id="step-delivered">
+                <div class="icon">✅</div>
+                <div class="text">Đã giao</div>
+            </div>
+        </div>
+
+        <!-- 2. Thông tin đơn hàng -->
+        <div class="checkout-layout" style="margin-top:20px;">
+            <div class="checkout-form">
+                <h3>Thông tin nhận hàng</h3>
+                <p><strong>Mã đơn:</strong> <span id="dt-id" style="color:#3498db"></span></p>
+                <p><strong>Người nhận:</strong> <span id="dt-name"></span></p>
+                <p><strong>SĐT:</strong> <span id="dt-phone"></span></p>
+                <p><strong>Địa chỉ:</strong> <span id="dt-address"></span></p>
+                <p><strong>Ngày đặt:</strong> <span id="dt-date"></span></p>
+            </div>
+            <div class="checkout-summary">
+                <h3>Sản phẩm</h3>
+                <div id="dt-items"></div>
+                <hr>
+                <div class="summary-row total">
+                    <strong>Tổng cộng:</strong>
+                    <strong id="dt-total" style="color:red"></strong>
+                </div>
+                
+                <!-- Khu vực giả lập Admin để test đổi trạng thái -->
+                <div style="margin-top:30px; padding:15px; background:#fff3cd; border:1px dashed orange; border-radius:5px">
+                    <p><strong>🛠️ Giả lập Admin (MMK-182):</strong></p>
+                    <button onclick="simulateStatus('confirmed')" style="padding:5px">Xác nhận đơn</button>
+                    <button onclick="simulateStatus('shipping')" style="padding:5px">Giao hàng</button>
+                    <button onclick="simulateStatus('delivered')" style="padding:5px">Hoàn tất</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        const TRACKING_ORDER_ID = "{{ order_id }}";
+        document.addEventListener('DOMContentLoaded', loadTrackingDetail);
+    </script>
+</body>
+</html>

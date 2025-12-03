@@ -1,140 +1,146 @@
-from . import get_db_connection
-from datetime import date
-from enum import Enum
+import json, os
+import config
+from datetime import datetime
 
-class User:
-  def __init__(self, name, email, phone, password, id = None):
-    self.id = id
-    self.name = name
-    self.email = email
-    self.phone = phone
-    self.password = password
+class SellerModel:
+    _data = {"sellers": [], "next_id": 1, "auto_conditions": {"min_username_len": 3, "require_doc": True, "require_email_verified": True}, "notifications": []}
 
-  def save(self):
-    db = get_db_connection()
-    cursor = db.cursor()
-    cursor.execute(
-      "INSERT INTO users (name, email, phone, password) VALUES (%s, %s, %s, %s)",
-      (self.name, self.email, self.phone, self.password)
-    )
-    self.id = cursor.lastrowid
-    db.commit()
-    db.close()
+    @classmethod
+    def _load(cls):
+        try:
+            if os.path.exists(config.PERSIST_FILE):
+                with open(config.PERSIST_FILE, 'r', encoding='utf-8') as f:
+                    cls._data = json.load(f)
+        except Exception as e:
+            print("load error", e)
 
-  def check_account(self):
-    db = get_db_connection()
-    cursor = db.cursor()
-    cursor.execute(
-      "SELECT * FROM users WHERE email=%s",
-      (self.email,)
-    )
-    row = cursor.fetchone()
-    db.close()
-    return row is not None
-  
-def find_user_by_id(id):
-  db = get_db_connection()
-  cursor = db.cursor(dictionary=True)
-  cursor.execute("SELECT * FROM users WHERE id=%s", (id,))
-  row = cursor.fetchone()
-  db.close()
-  if row:
-    return User(id=row["id"], name=row["name"], email=row["email"], phone=row["phone"], password=row["password"])
-  return None
+    @classmethod
+    def _save(cls):
+        try:
+            with open(config.PERSIST_FILE, 'w', encoding='utf-8') as f:
+                json.dump(cls._data, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            print("save error", e)
 
-def find_user_by_email(email):
-  db = get_db_connection()
-  cursor = db.cursor(dictionary=True)
-  cursor.execute(
-    "SELECT * FROM users WHERE email=%s",
-    (email,)
-  )
-  row = cursor.fetchone()
-  db.close()
-  if row:
-    return User(id=row["id"], name=row["name"], email=row["email"], phone=row["phone"], password=row["password"])
-  return None
+    @classmethod
+    def create_seller(cls, username, email, phone=None):
+        cls._load()
+        seller = {
+            "id": cls._data["next_id"],
+            "username": username,
+            "email": email,
+            "phone": phone,
+            "email_verified": False,
+            "phone_verified": False,
+            "documents": [],    # list of file paths
+            "shop": {
+                "shop_name": "",
+                "description": "",
+                "avatar": None,
+                "banner": None,
+                "address": "",
+                "policy": ""
+            },
+            "status": "pending",   # pending, auto_approved, manual_review, approved, rejected
+            "created_at": datetime.utcnow().isoformat(),
+            "notes": []
+        }
+        cls._data["sellers"].append(seller)
+        cls._data["next_id"] += 1
+        cls._save()
+        return seller
 
-def update_password_by_id(id, new_password):
-  db = get_db_connection()
-  cursor = db.cursor()
-  cursor.execute("UPDATE users SET password = %s WHERE id = %s", (new_password, id))
-  db.commit()
-  db.close()
-  return True
-  
-class Gender(Enum):
-  MALE = "Male"
-  FEMALE = "Female"
-  OTHER = "Other"
+    @classmethod
+    def list_sellers(cls):
+        cls._load(); return cls._data["sellers"]
 
-class Account:
-  def __init__(self, birth, gender, address, id_card, date_of_issue, place_of_issue, id=None, user_id = None):
-    self.id = id
-    self.user_id = user_id
-    self.birth = birth
-    self.gender = gender
-    self.address = address
-    self.id_card = id_card
-    self.date_of_issue = date_of_issue
-    self.place_of_issue = place_of_issue
+    @classmethod
+    def get(cls, sid):
+        cls._load()
+        for s in cls._data["sellers"]:
+            if s["id"] == sid: return s
+        return None
 
-  def save_account(self):
-    db = get_db_connection()
-    cursor = db.cursor()
-    cursor.execute(
-      "INSERT INTO users_info (user_id, birth, gender, address, id_card, date_of_issue, place_of_issue) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-      (self.user_id, self.birth, self.gender.value, self.address, self.id_card, self.date_of_issue, self.place_of_issue) 
-    )
-    db.commit()
-    db.close()
+    @classmethod
+    def add_document(cls, sid, filepath):
+        cls._load()
+        s = cls.get(sid)
+        if not s: return None
+        s["documents"].append(filepath)
+        cls._save()
+        return s
 
-def find_by_id(user_id):
-  db = get_db_connection()
-  cursor = db.cursor(dictionary=True)
-  cursor.execute(
-    "SELECT * FROM users_info WHERE user_id=%s",
-    (user_id,)
-  )
-  row = cursor.fetchone()
-  db.close()
+    @classmethod
+    def update_shop(cls, sid, **kwargs):
+        cls._load()
+        s = cls.get(sid)
+        if not s: return None
+        for k,v in kwargs.items():
+            if k in s["shop"]:
+                s["shop"][k] = v
+        cls._save()
+        return s
 
-  if row:
-    if row["gender"]:
-      gender_enum = Gender(row["gender"])
-    else:
-      gender_enum = None
-    return Account(
-      user_id=row["user_id"],
-      birth=row["birth"],
-      gender=gender_enum,
-      address=row["address"],
-      id_card=row["id_card"],
-      date_of_issue=row["date_of_issue"],
-      place_of_issue=row["place_of_issue"]
-    )
-  return None
+    @classmethod
+    def verify_email(cls, sid):
+        cls._load()
+        s = cls.get(sid)
+        if not s: return None
+        s["email_verified"] = True
+        cls._save()
+        return s
 
-def update_account(user_id, name, email, phone):
-  db = get_db_connection()
-  cursor = db.cursor(dictionary=True)
-  cursor.execute(
-    "UPDATE users SET name = %s, email = %s, phone = %s WHERE id = %s",
-    (name, email, phone, user_id)
-  )
-  db.commit()
-  db.close()
-  return True
+    @classmethod
+    def verify_phone(cls, sid):
+        cls._load()
+        s = cls.get(sid)
+        if not s: return None
+        s["phone_verified"] = True
+        cls._save()
+        return s
 
-def update_account_info(user_id, data):
-  db = get_db_connection()
-  cursor = db.cursor(dictionary=True)
-  cursor.execute(
-    "UPDATE users_info SET birth = %s, gender = %s, address = %s, id_card = %s, date_of_issue = %s, place_of_issue = %s WHERE user_id = %s",
-    (
-      data["birth"], data["gender"], data["address"], data["id_card"], data["date_of_issue"], data["place_of_issue"], user_id
-    )
-  )
-  db.commit()
-  db.close()
-  return True
+    @classmethod
+    def set_status(cls, sid, status, note=None):
+        cls._load()
+        s = cls.get(sid)
+        if not s: return None
+        s["status"] = status
+        if note:
+            s["notes"].append({"ts": datetime.utcnow().isoformat(), "note": note})
+        cls._save()
+        return s
+
+    @classmethod
+    def autos_check_and_apply(cls, sid):
+        cls._load()
+        s = cls.get(sid)
+        cond = cls._data.get("auto_conditions", {})
+        if not s: return None
+        ok = True
+        if cond.get("require_doc") and len(s["documents"])==0: ok=False
+        if cond.get("require_email_verified") and not s.get("email_verified"): ok=False
+        if len(s["username"] or "") < cond.get("min_username_len", 1): ok=False
+        if ok:
+            s["status"] = "auto_approved"
+            cls._data["notifications"].append({"to": s["id"], "type":"auto_approved", "message":"Seller auto-approved"})
+        else:
+            s["status"] = "manual_review"
+        cls._save()
+        return s
+
+    @classmethod
+    def set_auto_conditions(cls, conditions: dict):
+        cls._load()
+        cls._data["auto_conditions"].update(conditions)
+        cls._save()
+        return cls._data["auto_conditions"]
+
+    @classmethod
+    def add_notification(cls, to_id, msg_type, message):
+        cls._load()
+        cls._data["notifications"].append({"to":to_id,"type":msg_type,"message":message,"ts":datetime.utcnow().isoformat()})
+        cls._save()
+
+    @classmethod
+    def get_notifications(cls):
+        cls._load(); return cls._data.get("notifications", [])

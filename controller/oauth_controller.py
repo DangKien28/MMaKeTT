@@ -26,3 +26,5 @@ def init_oauth(app):
         client_kwargs={'scope': 'public_profile'},
     )
 
+    return google, facebook
+

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đặt Hàng Thành Công</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .success-box { text-align: center; padding: 50px; }
+        .success-icon { font-size: 60px; color: #2ecc71; margin-bottom: 20px; }
+        .order-info { background: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: 20px auto; text-align: left;}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <h1>✅ Hoàn Tất Đơn Hàng</h1>
+        </div>
+    </header>
+
+    <main class="container success-box">
+        <div class="success-icon">🎉</div>
+        <h2>Cảm ơn bạn đã mua hàng!</h2>
+        <p>Mã đơn hàng của bạn là: <strong id="display-order-id" style="font-size: 1.2em; color: #3498db;">Loading...</strong></p>
+        <p>Chúng tôi đã gửi email xác nhận cho bạn.</p>
+
+        <!-- Chi tiết đơn hàng (MMK-105) -->
+        <div id="order-details-box" class="order-info hidden">
+            <h3>Chi tiết đơn hàng</h3>
+            <p><strong>Người nhận:</strong> <span id="od-name"></span></p>
+            <p><strong>Địa chỉ:</strong> <span id="od-address"></span></p>
+            <p><strong>Thanh toán:</strong> <span id="od-payment"></span></p>
+            <hr>
+            <div id="od-items"></div>
+            <hr>
+            <p style="text-align: right; font-size: 1.2em;"><strong>Tổng cộng: <span id="od-total" style="color:red"></span></strong></p>
+        </div>
+
+        <a href="/" class="action-btn secondary">Tiếp tục mua sắm</a>
+    </main>
+
+    <!-- Lưu order_id từ server vào biến JS để gọi API -->
+    <script>const ORDER_ID = "{{ order_id }}";</script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>document.addEventListener('DOMContentLoaded', initOrderSuccessPage);</script>
+</body>
+</html>

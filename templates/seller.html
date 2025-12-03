@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Kênh Người Bán</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* CSS Riêng cho nút Test */
+        .test-panel { margin-top: 30px; padding: 20px; background: #fff3cd; border: 1px dashed #e67e22; border-radius: 8px; }
+        .test-btn { margin-right: 10px; padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; color: white; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <h1>🏪 Kênh Người Bán</h1>
+            <nav>
+                <a href="/" class="nav-link">Mua Sắm</a>
+                
+                <!-- EPIC 7: Chuông Thông Báo Cho Seller (MMK-142) -->
+                <div class="nav-item-dropdown">
+                    <span class="nav-link" onclick="toggleSellerNoti()" style="cursor:pointer">
+                        🔔 Thông báo Shop <span id="seller-noti-badge" class="badge hidden">0</span>
+                    </span>
+                    <div id="seller-noti-dropdown" class="dropdown-content hidden">
+                        <div class="dropdown-header">Hoạt động mới</div>
+                        <div id="seller-noti-list">Đang tải...</div>
+                    </div>
+                </div>
+
+                <a href="/admin" class="nav-link">Admin (Duyệt)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Bước 1: Đăng ký -->
+        <section id="register-section" class="form-section">
+            <h2>📝 Đăng Ký Gian Hàng Mới</h2>
+            <div class="form-group">
+                <label>Họ tên chủ shop (Nhập 'VIP' để tự duyệt):</label>
+                <input type="text" id="reg-name" placeholder="Nguyễn Văn A">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="reg-email" placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại:</label>
+                <input type="text" id="reg-phone" placeholder="0909xxxxxx">
+            </div>
+            <button onclick="registerShop()" class="action-btn primary">Đăng Ký Ngay</button>
+        </section>
+
+        <!-- Bước 2: Dashboard -->
+        <section id="dashboard-section" class="form-section hidden">
+            <div class="status-badge" id="shop-status-badge">Trạng thái: Chờ duyệt</div>
+            <h2>⚙️ Thiết Lập Hồ Sơ Gian Hàng</h2>
+            <input type="hidden" id="current-shop-id">
+            
+            <div class="form-group">
+                <label>Tên Shop:</label>
+                <input type="text" id="setup-name" placeholder="Shop Công Nghệ...">
+            </div>
+            <div class="form-group">
+                <label>Địa chỉ kho:</label>
+                <input type="text" id="setup-address" placeholder="123 Đường ABC...">
+            </div>
+            <button onclick="updateShopProfile()" class="action-btn secondary">Lưu Hồ Sơ</button>
+
+            <!-- KHU VỰC TEST EPIC 7 (Giả lập sự kiện) -->
+            <div class="test-panel">
+                <h3>🛠️ Test Hệ Thống Thông Báo (Epic 7)</h3>
+                <p>Vì chưa có App khách hàng nhắn tin thật, hãy bấm nút dưới để giả lập:</p>
+                <button class="test-btn" style="background:#3498db" onclick="testSellerNoti('chat')">📩 Giả lập Khách nhắn tin (MMK-138)</button>
+                <button class="test-btn" style="background:#e74c3c" onclick="testSellerNoti('cancel')">⚠️ Giả lập Khách hủy đơn (MMK-139)</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Tự động load thông báo shop mỗi 5 giây
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSellerNotifications();
+            setInterval(loadSellerNotifications, 5000); // Polling giả lập realtime
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ p.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <h1>🛍️ MMK Market</h1>
+            <nav>
+                <a href="/" class="nav-link">Quay lại Mua Sắm</a>
+                <a href="/cart" class="nav-link">🛒 Giỏ Hàng</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container detail-page">
+        <!-- Phần trên: Ảnh & Thông tin mua hàng -->
+        <div class="product-main">
+            <!-- Cột trái: Ảnh & Video -->
+            <div class="product-gallery">
+                <div class="main-image-container">
+                    <img id="main-img" src="{{ p.images[0] }}" alt="{{ p.name }}" onmousemove="zoomImage(event)" onmouseleave="resetZoom()">
+                </div>
+                <div class="thumbnail-list">
+                    {% for img in p.images %}
+                    <img src="{{ img }}" onclick="changeImage('{{ img }}')" class="thumb-img">
+                    {% endfor %}
+                    
+                    {% if p.video %}
+                    <div class="video-btn" onclick="toggleVideo()">🎥 Video</div>
+                    {% endif %}
+                </div>
+                
+                <div id="video-box" class="hidden video-container">
+                    <iframe width="100%" height="300" src="{{ p.video }}" frameborder="0" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <!-- Cột phải: Thông tin & Nút mua -->
+            <div class="product-info-col">
+                <h1 class="p-title">{{ p.name }}</h1>
+                <div class="p-meta">
+                    <span>Thương hiệu: {{ p.vendor }}</span> | 
+                    <span>Đánh giá: {{ p.rating_avg }} ⭐</span> | 
+                    <span>Đã bán: 1.2k</span>
+                </div>
+                <div class="p-price">{{ "{:,.0f}".format(p.price) }} đ</div>
+
+                <!-- Chọn biến thể (Code đã sửa lại cho dễ đọc hơn) -->
+                {% if p.variants %}
+                <div class="variant-area">
+                    <p><strong>Chọn phân loại:</strong></p>
+                    <div id="detail-variants">
+                        {% for v in p.variants %}
+                            <!-- Kiểm tra tồn kho bằng if block rõ ràng -->
+                            <button class="variant-btn {% if v.stock <= 0 %}disabled{% endif %}" 
+                                    onclick="selectDetailVariant('{{ v.id }}', this, {{ v.stock }})"
+                                    {% if v.stock <= 0 %}disabled{% endif %}>
+                                {{ v.name }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                    <div id="detail-stock" style="margin-top:10px; color:green; font-weight:bold"></div>
+                </div>
+                {% endif %}
+
+                <div class="action-area">
+                    <input type="number" id="detail-qty" value="1" min="1" max="10" style="width: 60px; padding: 10px;">
+                    <button class="action-btn primary" onclick="addToCartFromDetail('{{ p.id }}')">THÊM VÀO GIỎ</button>
+                </div>
+
+                {% if p.shop %}
+                <div class="shop-card">
+                    <img src="{{ p.shop.avatar }}" class="shop-avatar">
+                    <div>
+                        <strong>{{ p.shop.name }}</strong>
+                        <p>Đánh giá shop: {{ p.shop.rating }}/5</p>
+                    </div>
+                    <button class="action-btn secondary" style="margin-left:auto; font-size:12px">Xem Shop</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Phần dưới: Mô tả & Đánh giá -->
+        <div class="product-details-bottom">
+            <div class="section-box">
+                <h3>Chi Tiết Sản Phẩm</h3>
+                <div class="p-desc">{{ p.description }}</div>
+                {% if p.attributes %}
+                <table class="attr-table">
+                    {% for attr in p.attributes %}
+                    <tr>
+                        <td class="attr-name">{{ attr.name }}</td>
+                        <td>{{ attr.value }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                {% endif %}
+            </div>
+
+            <div class="section-box">
+                <h3>Đánh Giá Sản Phẩm</h3>
+                {% if p.reviews %}
+                    {% for rev in p.reviews %}
+                    <div class="review-item">
+                        <div class="rev-header">
+                            <strong>{{ rev.user }}</strong>
+                            <span class="rev-stars">{{ '⭐' * rev.rating }}</span>
+                        </div>
+                        <p class="rev-content">{{ rev.comment }}</p>
+                        <span class="rev-date">{{ rev.date }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Chưa có đánh giá nào.</p>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+    
+    <div id="toast" class="toast hidden">Thêm thành công!</div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Set biến toàn cục cho JS dùng
+        const currentDetailProductId = "{{ p.id }}";
+        
+        // Sửa lại cú pháp kiểm tra biến thể để tránh lỗi JS
+        // Nếu p.variants tồn tại (Python list không rỗng) -> in ra true (JS boolean)
+        // Ngược lại -> in ra false
+        const hasVariants = {{ 'true' if p.variants else 'false' }};
+    </script>
+</body>
+</html>

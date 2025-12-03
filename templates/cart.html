@@ -3,19 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Giỏ Hàng Của Bạn</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home_style.css') }}">
-    
-    <style>
-        .cart-layout { display: flex; gap: 20px; padding: 20px; }
-        .cart-items { flex: 2; }
-        .cart-summary { flex: 1; border: 1px solid #ddd; padding: 20px; border-radius: 8px; height: fit-content; }
-        .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
-        .checkout-btn { background: #d35400; color: white; padding: 10px; border-radius: 5px; margin-top: 20px; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <header class="header">
-        <div class="nav-container" style="padding: 10px 20px; background: #f8f9fa;">
+        <div class="nav-container">
             <h1>🛒 Giỏ Hàng</h1>
             <nav>
                 <a href="/" class="nav-link">Tiếp tục mua sắm</a>
@@ -32,12 +24,12 @@
             <h3>Tổng Quan Đơn Hàng</h3>
             
             <div class="summary-row">
-                <span>Tạm tính:</span>
+                <span>Tạm tính (MMK-85):</span>
                 <span id="subtotal">0 đ</span>
             </div>
             
             <div class="summary-row">
-                <span>Phí vận chuyển:</span>
+                <span>Phí vận chuyển (MMK-83):</span>
                 <span id="shipping">0 đ</span>
             </div>
             
@@ -46,9 +38,9 @@
                 <span id="discount">0 đ</span>
             </div>
 
-            <div class="voucher-box" style="margin: 15px 0;">
-                <input type="text" id="voucher-code" placeholder="Mã giảm giá" style="padding: 5px;">
-                <button onclick="alert('Chức năng đang phát triển')" style="padding: 5px;">Áp Dụng</button>
+            <div class="voucher-box">
+                <input type="text" id="voucher-code" placeholder="Mã giảm giá (nhập GIAM10)">
+                <button onclick="applyVoucher()">Áp Dụng</button>
             </div>
 
             <hr>
@@ -57,10 +49,10 @@
                 <strong id="final-total" style="color: #d35400; font-size: 1.2em;">0 đ</strong>
             </div>
 
-            <a href="/checkout" class="checkout-btn">Thanh Toán Ngay</a>
+            <a href="/checkout" class="checkout-btn" style="text-align:center; display:block; text-decoration:none;">Thanh Toán Ngay</a>
         </section>
     </main>
 
-    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

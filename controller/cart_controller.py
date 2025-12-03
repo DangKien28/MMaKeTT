@@ -1,53 +1,57 @@
-from flask import Blueprint, jsonify, request, render_template
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from model.cart import Cart
+from flask import Blueprint, request, jsonify, render_template
+from model.cart import (get_cart_details, add_to_cart, update_cart_qty, 
+                        remove_from_cart, move_to_wishlist, apply_voucher_code)
 
-cart_bp = Blueprint("cart", __name__)
+cart_bp = Blueprint('cart', __name__)
 
-@cart_bp.route("/cart")
-@jwt_required() # phải đăng nhập mới vào được trang giỏ hàng
-def view_cart():
-    return render_template("cart.html")
+# --- ROUTE GIAO DIỆN (Để vào được trang giỏ hàng) ---
+@cart_bp.route('/cart')
+def cart_page():
+    return render_template('cart.html')
 
-@cart_bp.route("/api/cart/items", methods=["GET"])
-@jwt_required()
-def get_cart():
-    user_id = get_jwt_identity()
+# --- API ROUTES ---
 
-    own_cart = Cart(user_id)
-    own_cart.load_from_db()
+@cart_bp.route('/api/cart', methods=['GET'])
+def get_cart_api():
+    data = get_cart_details()
+    return jsonify(data)
 
-    result = []
-    for item in own_cart.cartList:
-        result.append({
-            "product_id": item.product_id,
-            "name": item.name,
-            "price": item.price,
-            "quantity": item.quantity,
-            "image_url": item.image_url,
-            "total": item.total_price()
-        })
-    return jsonify(result)
-
-@cart_bp.route("/api/cart/add", methods=["POST"])
-@jwt_required()
-def add_to_cart():
-    user_id = get_jwt_identity()
-    data = request.get_json()
-    print(data)
-    product_id = data.get("product_id")
+@cart_bp.route('/api/cart/add', methods=['POST'])
+def add_to_cart_api():
+    """EPIC 4: API thêm vào giỏ (Nhận cả biến thể)"""
+    data = request.json
+    product_id = data.get('product_id')
+    qty = int(data.get('qty', 1))
+    variant_id = data.get('variant_id') # Lấy ID biến thể
     
-    own_cart = Cart(user_id)
-    own_cart.save_item_to_db(product_id, 1) 
+    result = add_to_cart(product_id, qty, variant_id)
     
-    return jsonify({"message": "Đã thêm thành công"})
+    if result['success']:
+        return jsonify(result)
+    else:
+        return jsonify(result), 400
 
-@cart_bp.route("/api/cart/remove/<int:product_id>", methods=["DELETE"])
-@jwt_required()
-def remove_cart_item(product_id):
-    user_id = get_jwt_identity()
-    
-    own_cart = Cart(user_id)
-    own_cart.remove_item_from_db(product_id)
-    
-    return jsonify({"message": "Đã xóa sản phẩm"})
+@cart_bp.route('/api/cart/update', methods=['POST'])
+def update_qty_api():
+    data = request.json
+    update_cart_qty(data.get('product_id'), data.get('change'))
+    return jsonify(get_cart_details())
+
+@cart_bp.route('/api/cart/remove', methods=['POST'])
+def remove_item_api():
+    data = request.json
+    remove_from_cart(data.get('product_id'))
+    return jsonify(get_cart_details())
+
+@cart_bp.route('/api/cart/wishlist', methods=['POST'])
+def to_wishlist_api():
+    data = request.json
+    move_to_wishlist(data.get('product_id'))
+    return jsonify(get_cart_details())
+
+@cart_bp.route('/api/cart/voucher', methods=['POST'])
+def apply_voucher_api():
+    code = request.json.get('code')
+    success = apply_voucher_code(code)
+    msg = "Áp dụng mã GIAM10 thành công!" if success else "Mã giảm giá không hợp lệ."
+    return jsonify({"message": msg, "data": get_cart_details()})
