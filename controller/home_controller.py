@@ -35,6 +35,7 @@ def api_products():
   product_list = []
   for p in products:
     product_list.append({
+      "id": p.product_id,
       "name": p.name,
       "price": p.price,
       "rating": p.rating,

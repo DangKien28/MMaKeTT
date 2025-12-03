@@ -27,6 +27,7 @@ def all_products():
   producs_list = []
   for p_data in products_data:
     product = Product(
+      product_id=p_data["id"],
       name=p_data["product_name"],
       price=p_data["product_price"],
       rating=p_data["product_rating"],
@@ -35,18 +36,18 @@ def all_products():
     producs_list.append(product)
   return producs_list
   
-# def find_product_by_id(id):
-#   db = get_db_connection()
-#   cursor = db.cursor(dictionary=True)
-#   cursor.execute("SELECT * FROM products WHERE id=%s", (id))
-#   product = cursor.fetchone()
-#   db.close()
-#   if product:
-#     return Product(
-#       product_id=product["id"],
-#       name=product["product_name"],
-#       price=product["product_price"],
-#       rating=product["product_rating"],
-#       image_url=product["image_url"]
-#     )
-#   return None
+def find_product_by_id(id):
+  db = get_db_connection()
+  cursor = db.cursor(dictionary=True)
+  cursor.execute("SELECT * FROM products WHERE id=%s", (id))
+  product = cursor.fetchone()
+  db.close()
+  if product:
+    return Product(
+      product_id=product["id"],
+      name=product["product_name"],
+      price=product["product_price"],
+      rating=product["product_rating"],
+      image_url=product["image_url"]
+    )
+  return None
